@@ -5,7 +5,6 @@ import org.company.chatapp.DTO.RegisterRequestDTO
 import org.company.chatapp.service.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import kotlin.math.log
 
 @RestController
 @RequestMapping("/api/auth")
@@ -31,7 +30,7 @@ class AuthController(
         @RequestBody loginRequestDTO: LoginRequestDTO
     ): ResponseEntity<Map<String, String>> {
         try {
-            val token = userService.login(loginRequestDTO.username, loginRequestDTO.password)
+            val token = userService.login(login = loginRequestDTO)
             return ResponseEntity.ok(mapOf("token" to token))
         } catch (e: Exception){
             return ResponseEntity.badRequest().body(mapOf("Error:" to "Failed ${e.message}"))

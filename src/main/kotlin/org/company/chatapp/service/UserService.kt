@@ -1,7 +1,9 @@
 package org.company.chatapp.service
 
+import org.company.chatapp.DTO.LoginRequestDTO
 import org.company.chatapp.DTO.RegisterRequestDTO
 import org.company.chatapp.DTO.toEntity
+import org.company.chatapp.entity.CustomUserDetails
 import org.company.chatapp.entity.UserEntity
 import org.company.chatapp.repository.UserRepository
 import org.company.chatapp.utils.JwtUtils
@@ -29,12 +31,12 @@ class UserService(
         return userRepository.save(user)
     }
 
-    fun login (username: String, password: String): String {
-        val user = userRepository.findByUsername(username)
+    fun login (login: LoginRequestDTO): String {
+        val user = userRepository.findByUsername(login.username)
         ?: throw UsernameNotFoundException("User not found")
-        if(!passwordEncoder.matches(password, user.password)) {
+        if(!passwordEncoder.matches(login.password, user.password)) {
             throw Exception("Invalid password")
         }
-        return jwtUtils.generateToken(username)
+        return jwtUtils.generateToken(username = login.username, password = passwordEncoder.encode(login.password))
     }
 }
