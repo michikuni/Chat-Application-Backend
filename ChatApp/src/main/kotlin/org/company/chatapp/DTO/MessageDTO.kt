@@ -4,17 +4,18 @@ import org.company.chatapp.entity.MessageEntity
 import java.time.Instant
 
 data class MessageDTO(
-    val id: Long,
+    val conversationId: Long,
     val senderId: Long,
-    val text: String,
-    val timestamp: Instant,
+    val content: String,
+    val createdAt: Instant,
     val isRead: Boolean,
 )
+
 fun toMessageDTO(entity: MessageEntity): MessageDTO =
     MessageDTO(
-        id = entity.id,
+        conversationId = entity.conversation.id,
         senderId = entity.sender.id,
-        text = entity.text,
-        timestamp = entity.timestamp,
+        content = entity.content,
+        createdAt = entity.createdAt,
         isRead = entity.isRead
     )

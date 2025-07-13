@@ -3,7 +3,6 @@ package org.company.chatapp.filter
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.company.chatapp.entity.CustomUserDetails
 import org.company.chatapp.utils.JwtUtils
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder

@@ -1,13 +1,9 @@
 package org.company.chatapp.service
 
-import org.company.chatapp.DTO.LoginRequestDTO
-import org.company.chatapp.DTO.RegisterRequestDTO
-import org.company.chatapp.DTO.toEntity
-import org.company.chatapp.entity.CustomUserDetails
+import org.company.chatapp.DTO.*
 import org.company.chatapp.entity.UserEntity
 import org.company.chatapp.repository.UserRepository
 import org.company.chatapp.utils.JwtUtils
-import org.modelmapper.ModelMapper
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
@@ -18,9 +14,9 @@ class UserService(
     private val passwordEncoder: BCryptPasswordEncoder,
     private val jwtUtils: JwtUtils
 ){
-    fun register(userDTO: RegisterRequestDTO): UserEntity {
-        if (userRepository.existsByUsername(userDTO.username)) {
-            throw IllegalArgumentException("Username ${userDTO.username} already exists")
+    fun register(userDTO: RegisterDTO): UserEntity {
+        if (userRepository.existsByAccount(userDTO.account)) {
+            throw IllegalArgumentException("Account ${userDTO.account} already exists")
         }
         if (userRepository.existsByEmail(userDTO.email)) {
             throw IllegalArgumentException("Email ${userDTO.email} already exists")
@@ -31,12 +27,17 @@ class UserService(
         return userRepository.save(user)
     }
 
-    fun login (login: LoginRequestDTO): String {
-        val user = userRepository.findByUsername(login.username)
+    fun login (login: LoginDTO): LoginResponseDTO {
+        val user = userRepository.findByAccount(login.account)
         ?: throw UsernameNotFoundException("User not found")
-        if(!passwordEncoder.matches(login.password, user.password)) {
-            throw Exception("Invalid password")
+        if((user.account == login.account && passwordEncoder.matches(login.password, user.password))) {
+            return LoginResponseDTO(
+                userId = user.id,
+                account = user.account,
+                token = jwtUtils.generateToken(username = login.account, password = passwordEncoder.encode(login.password))
+            )
+        } else {
+            throw Exception("Invalid password: Check in server UserService.")
         }
-        return jwtUtils.generateToken(username = login.username, password = passwordEncoder.encode(login.password))
     }
 }

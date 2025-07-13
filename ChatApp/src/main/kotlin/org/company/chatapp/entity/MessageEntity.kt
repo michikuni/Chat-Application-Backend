@@ -1,0 +1,29 @@
+package org.company.chatapp.entity
+
+import jakarta.persistence.*
+import java.time.Instant
+
+@Entity
+@Table(name = "message")
+data class MessageEntity(
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long = 0,
+
+    @ManyToOne
+    @JoinColumn(name = "conversation_id")
+    val conversation: ConversationEntity,
+
+    @ManyToOne
+    @JoinColumn(name = "sender_id")
+    val sender: UserEntity,
+
+    @Column(name = "content")
+    val content: String,
+
+    @Column(name = "created_at", nullable = false)
+    val createdAt: Instant = Instant.now(),
+
+    @Column(name = "is_sent", nullable = false)
+    val isRead: Boolean = false
+)
