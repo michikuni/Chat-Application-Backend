@@ -19,18 +19,17 @@ class JwtUtils {
 
     private val secretKey: SecretKey = Keys.hmacShaKeyFor(SECRET_KEY.toByteArray())
 
-    fun generateToken(username: String, password: String): String {
-        val claims = mapOf("pass" to password) // Có thể loại bỏ "pass" nếu không cần lưu
-        return createToken(claims, username)
+    fun generateToken(username: String): String {
+        val claims = Jwts.claims().setSubject(username)
+        return createToken(claims)
     }
 
-    private fun createToken(claims: Map<String, Any>, subject: String): String {
+    private fun createToken(claims: Map<String, Any>): String {
         val now = Date()
         val expiry = Date(now.time + EXPIRATION_TIME_MS)
 
         return Jwts.builder()
             .setClaims(claims)
-            .setSubject(subject)
             .setIssuedAt(now)
             .setExpiration(expiry)
             .signWith(secretKey, SignatureAlgorithm.HS256)

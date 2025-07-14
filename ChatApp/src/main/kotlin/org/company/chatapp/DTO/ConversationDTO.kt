@@ -7,18 +7,17 @@ data class ConversationDTO(
     val memberIds: List<Long>,
     val conversationName: String?,
     val avatar: String?,
-    val numberMembers: Int?,
-    val createAt: Instant,
-    val lastMessage: Long?,
+    val numberMembers: Int,
+    val createAt: Instant = Instant.now(),
+    val lastMessage: Long?
 )
-fun toConversationDTO(
-    entity: ConversationEntity
-): ConversationDTO =
-    ConversationDTO(
-        memberIds = entity.memberIds,
-        conversationName = entity.conversationName,
-        avatar = entity.avatar,
-        numberMembers = entity.numberMembers,
-        createAt = entity.createdAt,
-        lastMessage = entity.lastMessage,
+fun ConversationDTO.toEntityGroup(): ConversationEntity {
+    return ConversationEntity(
+        memberIds = memberIds,
+        conversationName = conversationName,
+        avatar = avatar,
+        numberMembers = numberMembers,
+        createdAt = createAt,
+        lastMessage = lastMessage
     )
+}

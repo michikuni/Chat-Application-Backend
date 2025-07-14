@@ -30,11 +30,10 @@ class UserService(
     fun login (login: LoginDTO): LoginResponseDTO {
         val user = userRepository.findByAccount(login.account)
         ?: throw UsernameNotFoundException("User not found")
-        if((user.account == login.account && passwordEncoder.matches(login.password, user.password))) {
+        if(passwordEncoder.matches(login.password, user.password)) {
             return LoginResponseDTO(
-                userId = user.id,
                 account = user.account,
-                token = jwtUtils.generateToken(username = login.account, password = passwordEncoder.encode(login.password))
+                token = jwtUtils.generateToken(user.account)
             )
         } else {
             throw Exception("Invalid password: Check in server UserService.")

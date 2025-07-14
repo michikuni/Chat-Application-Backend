@@ -22,10 +22,10 @@ data class ConversationEntity(
     val avatar: String? = null,
 
     @Column(name = "number_members")
-    val numberMembers: Int? = null,
+    val numberMembers: Int = 1,
 
     @Column(name = "created_at", nullable = false)
-    val createdAt: Instant = Instant.now(),
+    val createdAt: Instant,
 
     @Column(name = "last_message_id")
     val lastMessage: Long? = null,

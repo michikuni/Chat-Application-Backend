@@ -8,7 +8,7 @@ data class MessageDTO(
     val senderId: Long,
     val content: String,
     val createdAt: Instant,
-    val isRead: Boolean,
+    val isRead: Boolean
 )
 
 fun toMessageDTO(entity: MessageEntity): MessageDTO =

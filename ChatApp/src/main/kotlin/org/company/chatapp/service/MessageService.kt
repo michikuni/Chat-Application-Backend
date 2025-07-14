@@ -1,16 +1,12 @@
 package org.company.chatapp.service
 
-import org.company.chatapp.DTO.ConversationDTO
 import org.company.chatapp.DTO.MessageDTO
-import org.company.chatapp.DTO.toConversationDTO
-import org.company.chatapp.DTO.toMessageDTO
 import org.company.chatapp.repository.ConversationRepository
 import org.company.chatapp.repository.MessageRepository
-import org.springframework.data.domain.*
 import org.springframework.stereotype.Service
 
 @Service
-class ChatService(
+class MessageService(
     private val conversationRepository: ConversationRepository,
     private val messageRepository: MessageRepository
 ){

@@ -9,7 +9,7 @@ data class RegisterDTO (
     val email:String,
     val password:String,
     val avatar:String? = null,
-    val createdAt: Instant = Instant.now(),
+    val createdAt: Instant = Instant.now()
     )
 
 fun RegisterDTO.toEntity(): UserEntity {
@@ -19,6 +19,6 @@ fun RegisterDTO.toEntity(): UserEntity {
         email = this.email,
         password = this.password,
         avatar = this.avatar,
-        createAt = this.createdAt,
+        createAt = this.createdAt
     )
 }

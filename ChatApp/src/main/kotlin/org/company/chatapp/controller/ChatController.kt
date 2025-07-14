@@ -1,8 +1,8 @@
 package org.company.chatapp.controller
 
 import org.company.chatapp.DTO.ConversationDTO
-import org.company.chatapp.DTO.MessageDTO
-import org.company.chatapp.service.ChatService
+import org.company.chatapp.service.ConversationService
+import org.company.chatapp.service.MessageService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -10,8 +10,16 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/chats")
 class ChatController (
-    private val chatService: ChatService,
+    private val messageService: MessageService,
+    private val conversationService: ConversationService,
 ) {
+    @PostMapping("/create_conversation")
+    fun createConversation(
+        @RequestBody conversation: ConversationDTO,
+    ): ResponseEntity<Any> {
+        conversationService.createConversation(conversation)
+        return ResponseEntity.ok("Tạo đoạn chat thành công")
+    }
 //    @GetMapping
 //    fun getAllConversationsForUser(
 //        @RequestParam userId: Long
