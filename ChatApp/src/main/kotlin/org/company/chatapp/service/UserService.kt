@@ -17,7 +17,8 @@ class UserService(
     private val userRepository: UserRepository,
     private val passwordEncoder: BCryptPasswordEncoder,
     private val friendshipRepository: FriendshipRepository,
-    private val jwtUtils: JwtUtils
+    private val jwtUtils: JwtUtils,
+    private val customMapper: CustomMapper
 ){
     fun register(userDTO: RegisterDTO): UserEntity {
         if (userRepository.existsByUsername(userDTO.username)) {
@@ -37,6 +38,7 @@ class UserService(
         ?: throw NullPointerException("Tài khoản không tồn tại")
         if(passwordEncoder.matches(login.password, user.password)) {
             return LoginResponseDTO(
+                id = user.id,
                 username = user.username,
                 token = jwtUtils.generateToken(user.username)
             )
@@ -45,17 +47,13 @@ class UserService(
         }
     }
 
-    fun getAllFriendsById(userId: Long): List<UserEntity> {
+    fun getAllFriendsById(userId: Long): List<UserDTO> {
         val friendId = friendshipRepository.findAllFriendIdByUserId(userId)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy bạn bè nào cho user id : $userId")
-        val friendData = mutableListOf<UserEntity>()
-        for (id in friendId){
-            val user = userRepository.findById(id)
-            if (user.isPresent){
-                friendData.add(user.get())
-            }
+
+        return friendId.mapNotNull { id ->
+            userRepository.findById(id).map { customMapper.toDto(it) }.orElse(null)
         }
-        return friendData
     }
 
     fun getAllUser(): List<UserEntity> {

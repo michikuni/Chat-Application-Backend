@@ -1,5 +1,6 @@
 package org.company.chatapp.controller
 
+import org.company.chatapp.DTO.UserDTO
 import org.company.chatapp.entity.UserEntity
 import org.company.chatapp.service.UserService
 import org.springframework.web.bind.annotation.*
@@ -15,7 +16,7 @@ class UserController (
     @GetMapping("/all_users/{userId}")
     fun allUsers(
         @PathVariable userId: Long
-    ): List<UserEntity>{
+    ): List<UserDTO>{
         return userService.getAllFriendsById(userId)
     }
 }

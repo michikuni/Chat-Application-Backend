@@ -4,7 +4,6 @@ import org.company.chatapp.DTO.LoginDTO
 import org.company.chatapp.DTO.RegisterDTO
 import org.company.chatapp.service.UserService
 import org.springframework.http.ResponseEntity
-import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -23,11 +22,11 @@ class AuthController(
             ResponseEntity.badRequest().body(e.message)
         }
     }
-    @GetMapping("/test")
-    fun test(): String = "OK"
 
     @PostMapping("/login")
-    fun login(@RequestBody loginRequestDTO: LoginDTO): ResponseEntity<Any> {
+    fun login(
+        @RequestBody loginRequestDTO: LoginDTO
+    ): ResponseEntity<Any> {
         return try {
             ResponseEntity.ok(userService.login(loginRequestDTO))
         } catch (e: NullPointerException){

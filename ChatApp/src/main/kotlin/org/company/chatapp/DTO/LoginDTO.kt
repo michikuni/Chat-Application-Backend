@@ -7,6 +7,7 @@ data class LoginDTO(
 )
 
 data class LoginResponseDTO(
+    val id: Long,
     val username: String,
     val token: String? = null
 )
