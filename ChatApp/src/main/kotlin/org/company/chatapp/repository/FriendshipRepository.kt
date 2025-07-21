@@ -4,6 +4,7 @@ import org.company.chatapp.DTO.FriendshipStatus
 import org.company.chatapp.entity.FriendsEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.query.Param
 
 interface FriendshipRepository : JpaRepository<FriendsEntity, Long> {
     fun findByUserIdAndFriendId(user: Long, friend: Long): FriendsEntity?
@@ -14,6 +15,10 @@ interface FriendshipRepository : JpaRepository<FriendsEntity, Long> {
 """)
     fun findBetweenUsers(userId: Long, friendId: Long): FriendsEntity?
 
+    @Query(value = "SELECT friend_id FROM friends WHERE user_id = :userId", nativeQuery = true)
+    fun findAllFriendIdByUserId(@Param("userId") userId: Long): List<Long>?
+
+    fun findAllByUserId(userId: Long): List<FriendsEntity>
 
     fun findAllByUserIdAndStatus(userId: Long, status: FriendshipStatus): List<FriendsEntity>
 

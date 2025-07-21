@@ -27,8 +27,6 @@ class FriendController(
         @PathVariable senderId: Long,
         @RequestBody receiverId: Long
     ): ResponseEntity<String> {
-        val sender = userService.getUserById(senderId)
-        val receiver = userService.getUserById(receiverId)
         friendService.sendFriendRequest(senderId, receiverId)
         return ResponseEntity.ok("Gửi lời mời kết bạn thành công")
     }

@@ -2,6 +2,7 @@ package org.company.chatapp.service
 
 import org.company.chatapp.DTO.*
 import org.company.chatapp.entity.UserEntity
+import org.company.chatapp.repository.FriendshipRepository
 import org.company.chatapp.repository.UserRepository
 import org.company.chatapp.utils.JwtUtils
 import org.springframework.security.core.userdetails.UsernameNotFoundException
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service
 class UserService(
     private val userRepository: UserRepository,
     private val passwordEncoder: BCryptPasswordEncoder,
+    private val friendshipRepository: FriendshipRepository,
     private val jwtUtils: JwtUtils
 ){
     fun register(userDTO: RegisterDTO): UserEntity {
@@ -38,6 +40,24 @@ class UserService(
         } else {
             throw Exception("Invalid password: Check in server UserService.")
         }
+    }
+
+    fun getAllFriendsById(userId: Long): List<UserEntity> {
+        val friendId = friendshipRepository.findAllFriendIdByUserId(userId)
+        val friendData = mutableListOf<UserEntity>()
+        if (friendId != null) {
+            for (id in friendId){
+                val user = userRepository.findById(id)
+                if (user.isPresent){
+                    friendData.add(user.get())
+                }
+            }
+        }
+        return friendData
+    }
+
+    fun getAllUser(): List<UserEntity> {
+        return userRepository.findAll()
     }
 
     fun getUserById(id: Long): UserEntity {
