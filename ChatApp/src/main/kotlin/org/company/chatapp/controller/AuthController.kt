@@ -17,7 +17,7 @@ class AuthController(
     ): ResponseEntity<String> {
         return try {
             userService.register(registerDTO)
-            ResponseEntity.ok("Register for user ${registerDTO.account} successfully")
+            ResponseEntity.ok("Register for user ${registerDTO.username} successfully")
         } catch (e: Exception){
             ResponseEntity.badRequest().body("Lỗi exception ${e.message}")
         } catch (e: IllegalArgumentException){

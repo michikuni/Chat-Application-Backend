@@ -15,8 +15,8 @@ class UserService(
     private val jwtUtils: JwtUtils
 ){
     fun register(userDTO: RegisterDTO): UserEntity {
-        if (userRepository.existsByAccount(userDTO.account)) {
-            throw IllegalArgumentException("Account ${userDTO.account} already exists")
+        if (userRepository.existsByUsername(userDTO.username)) {
+            throw IllegalArgumentException("Account ${userDTO.username} already exists")
         }
         if (userRepository.existsByEmail(userDTO.email)) {
             throw IllegalArgumentException("Email ${userDTO.email} already exists")
@@ -28,15 +28,23 @@ class UserService(
     }
 
     fun login (login: LoginDTO): LoginResponseDTO {
-        val user = userRepository.findByAccount(login.account)
+        val user = userRepository.findByUsername(login.username)
         ?: throw UsernameNotFoundException("User not found")
         if(passwordEncoder.matches(login.password, user.password)) {
             return LoginResponseDTO(
-                account = user.account,
-                token = jwtUtils.generateToken(user.account)
+                username = user.username,
+                token = jwtUtils.generateToken(user.username)
             )
         } else {
             throw Exception("Invalid password: Check in server UserService.")
         }
+    }
+
+    fun getUserById(id: Long): UserEntity {
+        return userRepository.findById(id)
+            .orElseThrow { RuntimeException("User not found with id $id") }
+    }
+    fun getUserByUsername(username: String): UserEntity? {
+        return userRepository.findByUsername(username)
     }
 }

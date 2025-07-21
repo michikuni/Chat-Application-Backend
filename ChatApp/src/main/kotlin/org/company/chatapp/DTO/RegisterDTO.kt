@@ -5,7 +5,7 @@ import java.time.Instant
 
 data class RegisterDTO (
     val name:String,
-    val account:String,
+    val username:String,
     val email:String,
     val password:String,
     val avatar:String? = null,
@@ -15,7 +15,7 @@ data class RegisterDTO (
 fun RegisterDTO.toEntity(): UserEntity {
     return UserEntity(
         name = this.name,
-        account = this.account,
+        username = this.username,
         email = this.email,
         password = this.password,
         avatar = this.avatar,
