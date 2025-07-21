@@ -4,6 +4,7 @@ import org.company.chatapp.DTO.LoginDTO
 import org.company.chatapp.DTO.RegisterDTO
 import org.company.chatapp.service.UserService
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -17,11 +18,9 @@ class AuthController(
     ): ResponseEntity<String> {
         return try {
             userService.register(registerDTO)
-            ResponseEntity.ok("Register for user ${registerDTO.username} successfully")
-        } catch (e: Exception){
-            ResponseEntity.badRequest().body("Lỗi exception ${e.message}")
+            ResponseEntity.ok("Đăng ký tài khoản ${registerDTO.username} thành công")
         } catch (e: IllegalArgumentException){
-            ResponseEntity.badRequest().body("Lỗi Illegal ${e.message}")
+            ResponseEntity.badRequest().body(e.message)
         }
     }
     @GetMapping("/test")
@@ -31,10 +30,10 @@ class AuthController(
     fun login(@RequestBody loginRequestDTO: LoginDTO): ResponseEntity<Any> {
         return try {
             ResponseEntity.ok(userService.login(loginRequestDTO))
+        } catch (e: NullPointerException){
+            ResponseEntity.badRequest().body(e.message)
         } catch (e: Exception){
-            ResponseEntity.badRequest().body("Lỗi exception ${e.message}")
-        } catch (e: IllegalArgumentException){
-            ResponseEntity.badRequest().body("Lỗi Illegal ${e.message}")
+            ResponseEntity.badRequest().body(e.message)
         }
     }
 }

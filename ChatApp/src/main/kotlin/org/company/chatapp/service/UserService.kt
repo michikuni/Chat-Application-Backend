@@ -5,9 +5,12 @@ import org.company.chatapp.entity.UserEntity
 import org.company.chatapp.repository.FriendshipRepository
 import org.company.chatapp.repository.UserRepository
 import org.company.chatapp.utils.JwtUtils
+import org.springframework.data.crossstore.ChangeSetPersister
+import org.springframework.http.HttpStatus
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
+import org.springframework.web.server.ResponseStatusException
 
 @Service
 class UserService(
@@ -18,10 +21,10 @@ class UserService(
 ){
     fun register(userDTO: RegisterDTO): UserEntity {
         if (userRepository.existsByUsername(userDTO.username)) {
-            throw IllegalArgumentException("Account ${userDTO.username} already exists")
+            throw IllegalArgumentException("Tài khoản ${userDTO.username} đã tồn tại")
         }
         if (userRepository.existsByEmail(userDTO.email)) {
-            throw IllegalArgumentException("Email ${userDTO.email} already exists")
+            throw IllegalArgumentException("Email ${userDTO.email} đã tồn tại")
         }
         val user = userDTO.toEntity().apply {
             password = passwordEncoder.encode(userDTO.password)
@@ -31,26 +34,25 @@ class UserService(
 
     fun login (login: LoginDTO): LoginResponseDTO {
         val user = userRepository.findByUsername(login.username)
-        ?: throw UsernameNotFoundException("User not found")
+        ?: throw NullPointerException("Tài khoản không tồn tại")
         if(passwordEncoder.matches(login.password, user.password)) {
             return LoginResponseDTO(
                 username = user.username,
                 token = jwtUtils.generateToken(user.username)
             )
         } else {
-            throw Exception("Invalid password: Check in server UserService.")
+            throw Exception("Tài khoản hoặc mật khẩu không đúng")
         }
     }
 
     fun getAllFriendsById(userId: Long): List<UserEntity> {
         val friendId = friendshipRepository.findAllFriendIdByUserId(userId)
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy bạn bè nào cho user id : $userId")
         val friendData = mutableListOf<UserEntity>()
-        if (friendId != null) {
-            for (id in friendId){
-                val user = userRepository.findById(id)
-                if (user.isPresent){
-                    friendData.add(user.get())
-                }
+        for (id in friendId){
+            val user = userRepository.findById(id)
+            if (user.isPresent){
+                friendData.add(user.get())
             }
         }
         return friendData
@@ -60,9 +62,9 @@ class UserService(
         return userRepository.findAll()
     }
 
-    fun getUserById(id: Long): UserEntity {
+    fun getUserById(id: Long): UserEntity? {
         return userRepository.findById(id)
-            .orElseThrow { RuntimeException("User not found with id $id") }
+            .orElseThrow { throw ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy người dùng với id: $id") }
     }
     fun getUserByUsername(username: String): UserEntity? {
         return userRepository.findByUsername(username)

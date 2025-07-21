@@ -4,7 +4,9 @@ import org.company.chatapp.DTO.FriendshipStatus
 import org.company.chatapp.entity.FriendsEntity
 import org.company.chatapp.repository.FriendshipRepository
 import org.company.chatapp.repository.UserRepository
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import org.springframework.web.server.ResponseStatusException
 import java.time.Instant
 
 @Service
@@ -14,7 +16,11 @@ class FriendService (
 ){
     fun sendFriendRequest(senderId: Long, receiverId: Long): FriendsEntity {
         val sender = userService.getUserById(senderId)
+            ?: throw IllegalArgumentException("Không tìm thấy người gửi")
+
         val receiver = userService.getUserById(receiverId)
+            ?: throw IllegalArgumentException("Không tìm thấy người nhận")
+
         if (friendshipRepository.findBetweenUsers(senderId, receiverId) != null) {
             throw IllegalArgumentException("Đã gửi lời mời hoặc đã là bạn bè")
         }
@@ -33,7 +39,7 @@ class FriendService (
 
     fun getFriendship(id: Long): Long{
         val friendship = friendshipRepository.findById(id)
-            .orElseThrow { IllegalArgumentException("Không tìm thấy id friend") }
+            .orElseThrow { throw ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with id: $id") }
         return friendship.user.id
     }
 }

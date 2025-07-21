@@ -9,8 +9,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/friends")
 class FriendController(
-    val friendService: FriendService,
-    val userService: UserService
+    val friendService: FriendService
 ){
     @GetMapping("/test")
     fun testFriends(): String = "OK"
@@ -27,8 +26,12 @@ class FriendController(
         @PathVariable senderId: Long,
         @RequestBody receiverId: Long
     ): ResponseEntity<String> {
-        friendService.sendFriendRequest(senderId, receiverId)
-        return ResponseEntity.ok("Gửi lời mời kết bạn thành công")
+        return try {
+            friendService.sendFriendRequest(senderId, receiverId)
+            ResponseEntity.ok("Gửi lời mời kết bạn thành công")
+        } catch (e: IllegalArgumentException){
+            ResponseEntity.badRequest().body(e.message)
+        }
     }
 
     // Chấp nhận lời mời kết bạn
@@ -36,11 +39,13 @@ class FriendController(
     fun acceptFriendRequest(
         @PathVariable friendshipId: Long
     ): ResponseEntity<String> {
-        val friendship = friendService.getFriendship(friendshipId)
-        val sender = userService.getUserById(friendship)
-        println("Sender: $sender")
-        friendService.acceptFriendRequest(friendshipId)
-        return ResponseEntity.ok("Đã chấp nhận lời mời kết bạn")
+        return try {
+            friendService.acceptFriendRequest(friendshipId)
+            ResponseEntity.ok("Đã chấp nhận lời mời kết bạn")
+        } catch (e: IllegalArgumentException){
+            ResponseEntity.badRequest().body(e.message)
+        }
+
     }
 
 //    // (Tuỳ chọn) Huỷ lời mời kết bạn
