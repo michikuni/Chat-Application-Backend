@@ -24,10 +24,12 @@ class FriendController(
     @PostMapping("/add/{senderId}")
     fun sendFriendRequest(
         @PathVariable senderId: Long,
-        @RequestBody receiverId: Long
+        @RequestBody receiverEmail: String
     ): ResponseEntity<String> {
         return try {
-            friendService.sendFriendRequest(senderId, receiverId)
+            println("Sender: $senderId")
+            println("Sender: $receiverEmail")
+            friendService.sendFriendRequest(senderId, receiverEmail)
             ResponseEntity.ok("Gửi lời mời kết bạn thành công")
         } catch (e: IllegalArgumentException){
             ResponseEntity.badRequest().body(e.message)

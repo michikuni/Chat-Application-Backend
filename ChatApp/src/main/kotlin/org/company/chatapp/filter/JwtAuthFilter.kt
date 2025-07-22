@@ -27,40 +27,26 @@ class JwtAuthFilter (
         val authHeader = request.getHeader("Authorization")
         println("Authorization Header: $authHeader")
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            println("ok5")
-
             filterChain.doFilter(request, response)
-            println("ok")
             return
         }
 
         val jwt = authHeader.substring(7)
         println("ok8$jwt")
         val username = jwtUtils.extractUsername(jwt)
-        println("ok1$username")
 
         if (username != null && SecurityContextHolder.getContext().authentication == null) {
-            println("ok6")
             val userDetails = customUserDetails.loadUserByUsername(username)
-            println("ok7 $userDetails")
             if (jwtUtils.validateToken(jwt, userDetails.username)) {
                 val authToken = UsernamePasswordAuthenticationToken(
                     userDetails, null, userDetails.authorities
 
                 )
-                println("ok2")
                 authToken.details = WebAuthenticationDetailsSource().buildDetails(request)
                 SecurityContextHolder.getContext().authentication = authToken
-                println("ok3")
             }
         }
         println("ok9")
         filterChain.doFilter(request, response)
-        println("===> AuthHeader: $authHeader")
-        println("===> Username from token: $username")
-        println("===> Token valid: ${username?.let { jwtUtils.validateToken(jwt, it) }}")
-        println("===> SecurityContext already set: ${SecurityContextHolder.getContext().authentication != null}")
-        val authentication = SecurityContextHolder.getContext().authentication
-        println("Authentication in context: ${authentication?.name}, Authorities: ${authentication?.authorities}")
     }
 }

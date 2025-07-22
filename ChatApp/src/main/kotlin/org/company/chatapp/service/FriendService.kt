@@ -14,14 +14,14 @@ class FriendService (
     private val friendshipRepository: FriendshipRepository,
     private val userService: UserService
 ){
-    fun sendFriendRequest(senderId: Long, receiverId: Long): FriendsEntity {
+    fun sendFriendRequest(senderId: Long, receiverEmail: String): FriendsEntity {
         val sender = userService.getUserById(senderId)
             ?: throw IllegalArgumentException("Không tìm thấy người gửi")
 
-        val receiver = userService.getUserById(receiverId)
+        val receiver = userService.getUserByEmail(receiverEmail)
             ?: throw IllegalArgumentException("Không tìm thấy người nhận")
 
-        if (friendshipRepository.findBetweenUsers(senderId, receiverId) != null) {
+        if (friendshipRepository.findBetweenUsers(senderId, receiver.id) != null) {
             throw IllegalArgumentException("Đã gửi lời mời hoặc đã là bạn bè")
         }
         return friendshipRepository.save(

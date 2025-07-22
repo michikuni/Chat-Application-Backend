@@ -18,5 +18,6 @@ class UserController (
         @PathVariable userId: Long
     ): List<UserDTO>{
         return userService.getAllFriendsById(userId)
+
     }
 }

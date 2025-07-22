@@ -11,7 +11,6 @@ class CustomMapper {
         name = entity.name,
         username = entity.username,
         email = entity.email,
-        avatar = entity.avatar,
-        createAt = entity.createAt,
+        avatar = entity.avatar
     )
 }

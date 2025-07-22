@@ -48,10 +48,21 @@ class UserService(
     }
 
     fun getAllFriendsById(userId: Long): List<UserDTO> {
-        val friendId = friendshipRepository.findAllFriendIdByUserId(userId)
+        val friendshipId = friendshipRepository.findAllFriendshipIdByUserId(userId)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy bạn bè nào cho user id : $userId")
-
-        return friendId.mapNotNull { id ->
+        val friendship: MutableList<Long> = mutableListOf()
+        for (fr in friendshipId){
+            val friend = friendshipRepository.findFriendshipById(fr)
+            if (friend != null) {
+                if (userId == friend.user.id) {
+                    friendship.add(friend.friend.id)
+                } else if (userId == friend.friend.id) {
+                    friendship.add(friend.user.id)
+                }
+            }
+        }
+        println("GET ALL USERS SUCCESS")
+        return friendship.mapNotNull { id ->
             userRepository.findById(id).map { customMapper.toDto(it) }.orElse(null)
         }
     }
@@ -63,6 +74,10 @@ class UserService(
     fun getUserById(id: Long): UserEntity? {
         return userRepository.findById(id)
             .orElseThrow { throw ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy người dùng với id: $id") }
+    }
+
+    fun getUserByEmail(email: String): UserEntity? {
+        return userRepository.findByEmail(email)
     }
     fun getUserByUsername(username: String): UserEntity? {
         return userRepository.findByUsername(username)
