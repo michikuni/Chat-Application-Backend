@@ -3,6 +3,7 @@ package org.company.chatapp.controller
 import org.company.chatapp.DTO.UserDTO
 import org.company.chatapp.entity.UserEntity
 import org.company.chatapp.service.UserService
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -16,8 +17,7 @@ class UserController (
     @GetMapping("/all_users/{userId}")
     fun allUsers(
         @PathVariable userId: Long
-    ): List<UserDTO>{
-        return userService.getAllFriendsById(userId)
-
+    ): ResponseEntity<List<UserDTO>>{
+        return ResponseEntity.ok(userService.getAllFriendsById(userId))
     }
 }

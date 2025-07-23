@@ -1,5 +1,6 @@
 package org.company.chatapp.controller
 
+import org.company.chatapp.DTO.UserDTO
 import org.company.chatapp.service.FriendService
 import org.company.chatapp.service.UserService
 import org.springframework.http.ResponseEntity
@@ -67,13 +68,13 @@ class FriendController(
 //        val friends = friendService.getAcceptedFriends(userId)
 //        return ResponseEntity.ok(friends)
 //    }
-//
-//    // (Tuỳ chọn) Lấy danh sách lời mời kết bạn đang chờ
-//    @GetMapping("/pending/{userId}")
-//    fun listPendingRequests(
-//        @PathVariable userId: Long
-//    ): ResponseEntity<List<UserEntity>> {
-//        val pending = friendService.getPendingRequests(userId)
-//        return ResponseEntity.ok(pending)
-//    }
+
+    @GetMapping("/pending/{userId}")
+    fun listPendingRequests(
+        @PathVariable userId: Long
+    ): ResponseEntity<List<UserDTO?>> {
+        val pending = friendService.getAllPendingFriends(userId)
+        return ResponseEntity.ok(pending)
+    }
+
 }

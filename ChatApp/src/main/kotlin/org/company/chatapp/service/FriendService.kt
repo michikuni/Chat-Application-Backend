@@ -1,6 +1,7 @@
 package org.company.chatapp.service
 
 import org.company.chatapp.DTO.FriendshipStatus
+import org.company.chatapp.DTO.UserDTO
 import org.company.chatapp.entity.FriendsEntity
 import org.company.chatapp.repository.FriendshipRepository
 import org.company.chatapp.repository.UserRepository
@@ -10,9 +11,11 @@ import org.springframework.web.server.ResponseStatusException
 import java.time.Instant
 
 @Service
-class FriendService (
+class FriendService(
     private val friendshipRepository: FriendshipRepository,
-    private val userService: UserService
+    private val userService: UserService,
+    private val customMapper: CustomMapper,
+    private val userRepository: UserRepository
 ){
     fun sendFriendRequest(senderId: Long, receiverEmail: String): FriendsEntity {
         val sender = userService.getUserById(senderId)
@@ -37,9 +40,19 @@ class FriendService (
         return friendshipRepository.save(updated)
     }
 
+    fun getAllPendingFriends(id :Long): List<UserDTO>{
+        val listPendingId = friendshipRepository.findPendingFriendIdByUserId(id)
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy bạn bè nào cho user id : $id")
+        return listPendingId.mapNotNull { id ->
+            userRepository.findById(id).map { customMapper.toDto(it) }.orElse(null)
+        }
+    }
+
     fun getFriendship(id: Long): Long{
         val friendship = friendshipRepository.findById(id)
             .orElseThrow { throw ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with id: $id") }
         return friendship.user.id
     }
+
+
 }
