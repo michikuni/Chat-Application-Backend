@@ -71,10 +71,18 @@ class FriendController(
 //    }
 
     @GetMapping("/pending/{userId}")
-    fun listPendingRequests(
+    fun listPending(
         @PathVariable userId: Long
     ): ResponseEntity<List<FriendsDTO?>> {
         val pending = friendService.getAllPendingFriends(userId)
+        return ResponseEntity.ok(pending)
+    }
+
+    @GetMapping("/request/{userId}")
+    fun listRequests(
+        @PathVariable userId: Long
+    ): ResponseEntity<List<FriendsDTO?>> {
+        val pending = friendService.getAllRequestedFriends(userId)
         return ResponseEntity.ok(pending)
     }
 

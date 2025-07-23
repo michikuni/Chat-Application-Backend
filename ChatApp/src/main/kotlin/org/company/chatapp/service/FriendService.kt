@@ -43,9 +43,18 @@ class FriendService(
 
     fun getAllPendingFriends(userId :Long): List<FriendsDTO>{
         val listPendingId = friendshipRepository.findPendingFriendIdByUserId(userId)
-            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy bạn bè nào cho user id : $userId")
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy lời mời kết bạn nào cho user id : $userId")
         return listPendingId.mapNotNull { id ->
             val friendshipId  = friendshipRepository.findBetweenUsers(userId, id)
+            userRepository.findById(id).map { friendshipId?.let { it1 -> customMapper.friendshipDto(userEntity = it, friendshipId = it1.id) } }.orElse(null)
+        }
+    }
+
+    fun getAllRequestedFriends(userId :Long): List<FriendsDTO>{
+        val listRequestedId = friendshipRepository.findRequestedFriendIdByUserId(userId)
+            ?:throw ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy yêu cầu kết bạn nào cho user id: $userId")
+        return listRequestedId.mapNotNull { id ->
+            val friendshipId = friendshipRepository.findBetweenUsers(userId, id)
             userRepository.findById(id).map { friendshipId?.let { it1 -> customMapper.friendshipDto(userEntity = it, friendshipId = it1.id) } }.orElse(null)
         }
     }
