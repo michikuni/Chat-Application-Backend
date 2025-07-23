@@ -1,8 +1,9 @@
 package org.company.chatapp.service
 
+import org.company.chatapp.DTO.FriendsDTO
 import org.company.chatapp.DTO.FriendshipStatus
-import org.company.chatapp.DTO.UserDTO
 import org.company.chatapp.entity.FriendsEntity
+import org.company.chatapp.entity.UserEntity
 import org.company.chatapp.repository.FriendshipRepository
 import org.company.chatapp.repository.UserRepository
 import org.springframework.http.HttpStatus
@@ -40,11 +41,12 @@ class FriendService(
         return friendshipRepository.save(updated)
     }
 
-    fun getAllPendingFriends(id :Long): List<UserDTO>{
-        val listPendingId = friendshipRepository.findPendingFriendIdByUserId(id)
-            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy bạn bè nào cho user id : $id")
+    fun getAllPendingFriends(userId :Long): List<FriendsDTO>{
+        val listPendingId = friendshipRepository.findPendingFriendIdByUserId(userId)
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy bạn bè nào cho user id : $userId")
         return listPendingId.mapNotNull { id ->
-            userRepository.findById(id).map { customMapper.toDto(it) }.orElse(null)
+            val friendshipId  = friendshipRepository.findBetweenUsers(userId, id)
+            userRepository.findById(id).map { friendshipId?.let { it1 -> customMapper.friendshipDto(userEntity = it, friendshipId = it1.id) } }.orElse(null)
         }
     }
 

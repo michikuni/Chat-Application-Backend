@@ -5,10 +5,12 @@ import org.company.chatapp.entity.UserEntity
 import java.time.Instant
 
 data class FriendsDTO(
-    val createdAt: Instant = Instant.now(),
-    val status: FriendshipStatus,
-    val friendId: Long,
-    val userId: Long,
+    val friendshipId: Long,
+    val id: Long,
+    val name: String,
+    val username: String,
+    val email: String,
+    val avatar: String? = null
 )
 
 enum class FriendshipStatus {

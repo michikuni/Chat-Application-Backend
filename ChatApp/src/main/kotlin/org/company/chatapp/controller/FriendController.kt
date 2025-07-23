@@ -1,5 +1,6 @@
 package org.company.chatapp.controller
 
+import org.company.chatapp.DTO.FriendsDTO
 import org.company.chatapp.DTO.UserDTO
 import org.company.chatapp.service.FriendService
 import org.company.chatapp.service.UserService
@@ -72,7 +73,7 @@ class FriendController(
     @GetMapping("/pending/{userId}")
     fun listPendingRequests(
         @PathVariable userId: Long
-    ): ResponseEntity<List<UserDTO?>> {
+    ): ResponseEntity<List<FriendsDTO?>> {
         val pending = friendService.getAllPendingFriends(userId)
         return ResponseEntity.ok(pending)
     }

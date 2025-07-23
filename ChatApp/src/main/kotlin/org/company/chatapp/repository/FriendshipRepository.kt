@@ -24,6 +24,8 @@ interface FriendshipRepository : JpaRepository<FriendsEntity, Long> {
     //Lấy danh sách yêu cầu kết bạn
     @Query(value = "SELECT user_id FROM friends WHERE friend_id = :userId AND status = 'PENDING'", nativeQuery = true)
     fun findPendingFriendIdByUserId(@Param("userId") userId: Long): List<Long>?
+//    @Query(value = "SELECT id FROM friends WHERE (friend_id = :friendId AND user_id= :userId) AND status = 'PENDING'", nativeQuery = true)
+//    fun findPendingFriendshipIdByUserIdAndFriendId(@Param("userId") userId: Long, @Param("friendId") friendId: Long): List<Long>?
     @Query(value = "SELECT friend_id FROM friends WHERE user_id = :userId AND status = 'PENDING'", nativeQuery = true)
     fun findRequestedFriendIdByUserId(@Param("userId") userId: Long): List<Long>?
 
