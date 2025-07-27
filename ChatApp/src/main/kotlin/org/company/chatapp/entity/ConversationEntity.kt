@@ -25,8 +25,5 @@ data class ConversationEntity(
     val numberMembers: Int = 1,
 
     @Column(name = "created_at", nullable = false)
-    val createdAt: Instant,
-
-    @Column(name = "last_message_id")
-    val lastMessage: Long? = null,
+    val createdAt: Instant = Instant.now(),
 )

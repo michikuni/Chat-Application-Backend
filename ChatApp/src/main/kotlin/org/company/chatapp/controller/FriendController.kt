@@ -86,4 +86,17 @@ class FriendController(
         return ResponseEntity.ok(pending)
     }
 
+    @GetMapping("/getFriendByEmail/{userId}")
+    fun getFriendByEmail(
+        @PathVariable userId: Long,
+        @RequestParam email: String
+    ): ResponseEntity<FriendsDTO>{
+        val friend = friendService.getFriendByEmail(userId, email)
+        return if (friend != null){
+            ResponseEntity.ok(friend)
+        } else{
+            ResponseEntity.notFound().build()
+        }
+    }
+
 }

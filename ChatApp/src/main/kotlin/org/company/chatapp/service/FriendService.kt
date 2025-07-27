@@ -6,6 +6,7 @@ import org.company.chatapp.entity.FriendsEntity
 import org.company.chatapp.entity.UserEntity
 import org.company.chatapp.repository.FriendshipRepository
 import org.company.chatapp.repository.UserRepository
+import org.springframework.data.jpa.domain.AbstractPersistable_.id
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
@@ -57,6 +58,16 @@ class FriendService(
             val friendshipId = friendshipRepository.findBetweenUsers(userId, id)
             userRepository.findById(id).map { friendshipId?.let { it1 -> customMapper.friendshipDto(userEntity = it, friendshipId = it1.id) } }.orElse(null)
         }
+    }
+
+    fun getFriendByEmail(userId: Long, email: String): FriendsDTO?{
+        val friend = userRepository.findByEmail(email)
+        val friendship = friend?.let { friendshipRepository.findBetweenUsers(userId, friend.id) }
+        var friendshipId = 0L
+        if (friendship != null){
+            friendshipId = friendship.id
+        }
+        return friend?.let { customMapper.friendshipDto(userEntity = it, friendshipId = friendshipId) }
     }
 
     fun getFriendship(id: Long): Long{

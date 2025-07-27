@@ -22,5 +22,5 @@ data class FriendsEntity (
     @Enumerated(EnumType.STRING)
     val status: FriendshipStatus = FriendshipStatus.PENDING,
 
-    val createdAt: Instant
+    val createdAt: Instant = Instant.now(),
     )

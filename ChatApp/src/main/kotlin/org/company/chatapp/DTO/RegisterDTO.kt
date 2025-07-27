@@ -12,6 +12,7 @@ data class RegisterDTO (
     val createdAt: Instant = Instant.now()
     )
 
+
 fun RegisterDTO.toEntity(): UserEntity {
     return UserEntity(
         name = this.name,

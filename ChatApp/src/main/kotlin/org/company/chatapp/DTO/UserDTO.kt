@@ -1,6 +1,6 @@
 package org.company.chatapp.DTO
 
-import java.time.Instant
+import org.company.chatapp.entity.UserEntity
 
 data class UserDTO (
     val id: Long,

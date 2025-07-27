@@ -9,7 +9,6 @@ data class ConversationDTO(
     val avatar: String?,
     val numberMembers: Int,
     val createAt: Instant = Instant.now(),
-    val lastMessage: Long?
 )
 fun ConversationDTO.toEntityGroup(): ConversationEntity {
     return ConversationEntity(
@@ -17,7 +16,6 @@ fun ConversationDTO.toEntityGroup(): ConversationEntity {
         conversationName = conversationName,
         avatar = avatar,
         numberMembers = numberMembers,
-        createdAt = createAt,
-        lastMessage = lastMessage
+        createdAt = createAt
     )
 }

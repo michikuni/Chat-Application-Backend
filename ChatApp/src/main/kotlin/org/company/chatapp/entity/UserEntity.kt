@@ -31,5 +31,5 @@ data class UserEntity(
     val avatar: String? = null,
 
     @Column(name = "createAt" ,nullable = false)
-    val createAt: Instant,
+    val createAt: Instant = Instant.now(),
 )

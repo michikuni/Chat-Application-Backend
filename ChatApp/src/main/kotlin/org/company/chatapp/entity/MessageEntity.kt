@@ -12,11 +12,11 @@ data class MessageEntity(
 
     @ManyToOne
     @JoinColumn(name = "conversation_id")
-    val conversation: ConversationEntity,
+    val conversationId: ConversationEntity,
 
     @ManyToOne
-    @JoinColumn(name = "sender_id")
-    val sender: UserEntity,
+    @JoinColumn(name = "user_id")
+    val senderId: UserEntity,
 
     @Column(name = "content")
     val content: String,
