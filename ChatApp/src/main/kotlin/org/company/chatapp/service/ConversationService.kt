@@ -23,9 +23,9 @@ class ConversationService(
         return conversation.map { customMapper.conversationDto(it) }.orElse(null)
     }
 
-    fun createConversation(userId: UserDTO, friendId: UserDTO, message: String){
-        val user = userRepository.findById(userId.id).get()
-        val friend = userRepository.findById(friendId.id).get()
+    fun createConversation(userId: Long, friendId: Long, message: String){
+        val user = userRepository.findById(userId).get()
+        val friend = userRepository.findById(friendId).get()
         val conversation = conversationRepository.save(customMapper.conversationEntity(
             avatar = friend.avatar, numberMembers = 2,
             conversationName = friend.name,
