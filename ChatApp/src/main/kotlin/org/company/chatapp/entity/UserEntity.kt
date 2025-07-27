@@ -2,7 +2,6 @@ package org.company.chatapp.entity
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import jakarta.persistence.*
-import org.company.chatapp.DTO.RegisterDTO
 import java.time.Instant
 
 @Entity

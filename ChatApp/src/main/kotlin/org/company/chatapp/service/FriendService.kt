@@ -3,10 +3,8 @@ package org.company.chatapp.service
 import org.company.chatapp.DTO.FriendsDTO
 import org.company.chatapp.DTO.FriendshipStatus
 import org.company.chatapp.entity.FriendsEntity
-import org.company.chatapp.entity.UserEntity
 import org.company.chatapp.repository.FriendshipRepository
 import org.company.chatapp.repository.UserRepository
-import org.springframework.data.jpa.domain.AbstractPersistable_.id
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException

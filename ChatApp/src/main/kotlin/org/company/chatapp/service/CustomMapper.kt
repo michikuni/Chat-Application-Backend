@@ -2,7 +2,6 @@ package org.company.chatapp.service
 
 import org.company.chatapp.DTO.ConversationDTO
 import org.company.chatapp.DTO.FriendsDTO
-import org.company.chatapp.DTO.MessageDTO
 import org.company.chatapp.DTO.UserDTO
 import org.company.chatapp.entity.ChatMemberEntity
 import org.company.chatapp.entity.ConversationEntity

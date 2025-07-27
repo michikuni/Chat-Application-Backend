@@ -1,7 +1,5 @@
 package org.company.chatapp.DTO
 
-import org.company.chatapp.entity.UserEntity
-
 data class UserDTO (
     val id: Long,
     val name: String,

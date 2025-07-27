@@ -1,6 +1,5 @@
 package org.company.chatapp.DTO
 
-import org.company.chatapp.entity.ConversationEntity
 import java.time.Instant
 
 data class ConversationDTO(
@@ -10,12 +9,8 @@ data class ConversationDTO(
     val numberMembers: Int,
     val createAt: Instant = Instant.now(),
 )
-fun ConversationDTO.toEntityGroup(): ConversationEntity {
-    return ConversationEntity(
-        memberIds = memberIds,
-        conversationName = conversationName,
-        avatar = avatar,
-        numberMembers = numberMembers,
-        createdAt = createAt
-    )
-}
+
+data class createConversation(
+    val friendId: Long,
+    val message: String
+)

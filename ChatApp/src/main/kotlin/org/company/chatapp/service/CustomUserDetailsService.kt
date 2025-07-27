@@ -1,4 +1,5 @@
 package org.company.chatapp.service
+
 import org.company.chatapp.filter.CustomUserDetails
 import org.company.chatapp.repository.UserRepository
 import org.springframework.security.core.userdetails.UserDetails

@@ -1,7 +1,6 @@
 package org.company.chatapp.controller
 
 import org.company.chatapp.DTO.UserDTO
-import org.company.chatapp.entity.UserEntity
 import org.company.chatapp.service.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*

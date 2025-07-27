@@ -1,7 +1,6 @@
 package org.company.chatapp.service
 
 import org.company.chatapp.DTO.ConversationDTO
-import org.company.chatapp.DTO.UserDTO
 import org.company.chatapp.entity.ConversationEntity
 import org.company.chatapp.repository.*
 import org.springframework.http.HttpStatus

@@ -5,9 +5,7 @@ import org.company.chatapp.entity.UserEntity
 import org.company.chatapp.repository.FriendshipRepository
 import org.company.chatapp.repository.UserRepository
 import org.company.chatapp.utils.JwtUtils
-import org.springframework.data.crossstore.ChangeSetPersister
 import org.springframework.http.HttpStatus
-import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException

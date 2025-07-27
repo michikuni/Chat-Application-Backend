@@ -1,9 +1,5 @@
 package org.company.chatapp.DTO
 
-import org.company.chatapp.entity.FriendsEntity
-import org.company.chatapp.entity.UserEntity
-import java.time.Instant
-
 data class FriendsDTO(
     val friendshipId: Long,
     val id: Long,
