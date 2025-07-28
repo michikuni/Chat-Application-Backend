@@ -7,6 +7,7 @@ data class ConversationDTO(
     val conversationName: String?,
     val avatar: String?,
     val numberMembers: Int,
+    val messages: List<MessageDTO>,
     val createAt: Instant = Instant.now(),
 )
 

@@ -2,6 +2,7 @@ package org.company.chatapp.service
 
 import org.company.chatapp.DTO.ConversationDTO
 import org.company.chatapp.DTO.FriendsDTO
+import org.company.chatapp.DTO.MessageDTO
 import org.company.chatapp.DTO.UserDTO
 import org.company.chatapp.entity.ChatMemberEntity
 import org.company.chatapp.entity.ConversationEntity
@@ -27,12 +28,22 @@ class CustomMapper {
         email = userEntity.email,
         avatar = userEntity.avatar
     )
-    fun conversationDto(conversationEntity: ConversationEntity): ConversationDTO = ConversationDTO(
+
+    fun messageDto(messageEntity: MessageEntity): MessageDTO = MessageDTO(
+        senderId = messageEntity.senderId,
+        content = messageEntity.content,
+        createdAt = messageEntity.createdAt,
+        conversationId = messageEntity.conversationId,
+        isRead = messageEntity.isRead,
+    )
+
+    fun conversationDto(conversationEntity: ConversationEntity, messageEntity: List<MessageEntity>): ConversationDTO = ConversationDTO(
         conversationName = conversationEntity.conversationName,
         memberIds = conversationEntity.memberIds,
         avatar = conversationEntity.avatar,
         createAt = conversationEntity.createdAt,
-        numberMembers = conversationEntity.numberMembers
+        numberMembers = conversationEntity.numberMembers,
+        messages = messageEntity.map { messageDto(it) }
     )
 
     fun conversationEntity(conversationName: String?, avatar: String?, numberMembers: Int, memberIds: List<Long>, createdAt: Instant): ConversationEntity = ConversationEntity(
@@ -51,8 +62,7 @@ class CustomMapper {
         isRead = isSent,
     )
 
-    fun chatMembersEntity(userId: UserEntity, conversationId: ConversationEntity): ChatMemberEntity = ChatMemberEntity(
-        conversation = conversationId,
-        userId = userId,
-    )
+//    fun chatMembersEntity(conversationId: ConversationEntity): ChatMemberEntity = ChatMemberEntity(
+//        conversation = conversationId,
+//    )
 }

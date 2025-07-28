@@ -1,6 +1,8 @@
 package org.company.chatapp.controller
 
+import org.company.chatapp.DTO.ConversationDTO
 import org.company.chatapp.DTO.createConversation
+import org.company.chatapp.entity.ChatMemberEntity
 import org.company.chatapp.repository.UserRepository
 import org.company.chatapp.service.ConversationService
 import org.springframework.http.ResponseEntity
@@ -20,5 +22,18 @@ class ChatController (
     ): ResponseEntity<Any> {
         conversationService.createConversation(userId = userId, friendId = createConversation.friendId, createConversation.message)
         return ResponseEntity.ok("Tạo đoạn chat thành công")
+    }
+
+    @GetMapping("/allConversations/{userId}")
+    fun getAllConversation(
+        @PathVariable userId: Long,
+        @RequestParam friendId: Long
+    ): ResponseEntity<List<ConversationDTO>> {
+        val conversation = conversationService.getConversation(userId, friendId)
+        return if (conversation != null) {
+            ResponseEntity.ok(conversation)
+        } else {
+            ResponseEntity.notFound().build()
+        }
     }
 }
