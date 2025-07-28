@@ -8,10 +8,10 @@ data class ConversationDTO(
     val avatar: String?,
     val numberMembers: Int,
     val messages: List<MessageDTO>,
-    val createAt: Instant = Instant.now(),
+    val createAt: Instant,
 )
 
-data class createConversation(
+data class CreateConversation(
     val friendId: Long,
     val message: String
 )

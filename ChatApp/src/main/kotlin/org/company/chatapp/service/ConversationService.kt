@@ -12,7 +12,6 @@ import java.time.Instant
 class ConversationService(
     private val conversationRepository: ConversationRepository,
     private val messageRepository: MessageRepository,
-    private val chatMembersRepository: ChatMembersRepository,
     private val userRepository: UserRepository,
     private val customMapper: CustomMapper
 ){
@@ -49,8 +48,6 @@ class ConversationService(
                 content = message,
                 isSent = false))
         }
-
-//        chatMembersRepository.save(customMapper.chatMembersEntity(conversationId = conversation))
     }
     fun getConversationById(id: Long): ConversationEntity? {
         return conversationRepository.findById(id)

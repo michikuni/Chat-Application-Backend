@@ -30,7 +30,7 @@ class CustomMapper {
     )
 
     fun messageDto(messageEntity: MessageEntity): MessageDTO = MessageDTO(
-        senderId = messageEntity.senderId,
+        senderId = userToDto(messageEntity.senderId),
         content = messageEntity.content,
         createdAt = messageEntity.createdAt,
         conversationId = messageEntity.conversationId,
