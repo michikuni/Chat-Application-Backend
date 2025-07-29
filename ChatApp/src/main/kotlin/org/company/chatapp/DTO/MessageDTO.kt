@@ -1,12 +1,11 @@
 package org.company.chatapp.DTO
 
-import org.company.chatapp.entity.ConversationEntity
-import java.time.Instant
+import java.sql.Timestamp
 
 data class MessageDTO(
-    val conversationId: ConversationEntity,
+    val conversationId: GetConversation,
     val senderId: UserDTO,
     val content: String,
-    val createdAt: Instant,
+    val createdAt: Timestamp,
     val isRead: Boolean
 )

@@ -1,8 +1,6 @@
 package org.company.chatapp.DTO
 
 import java.sql.Timestamp
-import java.time.Instant
-import java.time.LocalDateTime
 
 data class ConversationDTO(
     val id: Long,
@@ -17,4 +15,13 @@ data class ConversationDTO(
 data class CreateConversation(
     val friendId: Long,
     val message: String
+)
+
+data class GetConversation(
+    val id: Long,
+    val memberIds: List<Long>,
+    val conversationName: String?,
+    val avatar: String?,
+    val numberMembers: Int,
+    val createdAt: Timestamp,
 )

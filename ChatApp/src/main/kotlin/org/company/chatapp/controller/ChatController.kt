@@ -18,7 +18,7 @@ class ChatController (
         @PathVariable userId: Long,
         @RequestBody createConversation: CreateConversation
     ): ResponseEntity<Any> {
-        conversationService.createConversation(userId = userId, friendId = createConversation.friendId, createConversation.message)
+        conversationService.createConversation(userId = userId, friendId = createConversation.friendId, message = createConversation.message)
         return ResponseEntity.ok("Tạo đoạn chat thành công")
     }
 
