@@ -1,5 +1,6 @@
 package org.company.chatapp.repository
 
+import org.company.chatapp.DTO.ConversationDTO
 import org.company.chatapp.entity.ConversationEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
@@ -20,4 +21,18 @@ interface ConversationRepository: JpaRepository<ConversationEntity, Long>{
     )
     fun findConversationBetweenUsers(@Param("userId") userId: Long, @Param("friendId") friendId: Long): Long?
 
+    @Query("SELECT cs.id, cm1.user_id, us.name, us.avatar, ms.content, ms.created_at, ms.is_sent " +
+            "FROM conversation cs " +
+            "JOIN chat_members cm ON cs.id = cm.conversation_id " +
+            "JOIN chat_members cm1 ON cm.conversation_id = cm1.conversation_id " +
+            "JOIN user us ON cm1.user_id = us.id " +
+            "JOIN message ms ON ms.conversation_id = cs.id " +
+            "JOIN (" +
+                "SELECT conversation_id, MAX(created_at) AS latest_time " +
+                "FROM message " +
+                "GROUP BY conversation_id" +
+            ") last_msg ON ms.conversation_id = last_msg.conversation_id AND ms.created_at = last_msg.latest_time " +
+            "WHERE cm.user_id = :userId AND cm1.user_id != :userId " +
+            "ORDER BY ms.created_at DESC;", nativeQuery = true)
+    fun findAllConversationByUserId(@Param("userId") userId: Long): List<ConversationDTO>?
 }

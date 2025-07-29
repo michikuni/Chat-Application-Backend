@@ -1,12 +1,14 @@
 package org.company.chatapp.service
 
 import org.company.chatapp.DTO.ConversationDTO
+import org.company.chatapp.DTO.MessageDTO
 import org.company.chatapp.entity.ConversationEntity
 import org.company.chatapp.repository.*
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
 import java.time.Instant
+import java.time.ZoneId
 
 @Service
 class ConversationService(
@@ -15,19 +17,17 @@ class ConversationService(
     private val userRepository: UserRepository,
     private val customMapper: CustomMapper
 ){
-    fun getConversation(userId: Long, friendId: Long): List<ConversationDTO>? {
+    fun getAllMessage(userId: Long, friendId: Long): List<MessageDTO>? {
         val conversationId = conversationRepository.findConversationBetweenUsers(userId, friendId)
         val message = conversationId?.let { messageRepository.findMessageByConversationId(it) }
-        val conversation = conversationId?.let { getConversationById(it) }
-        return if (message != null && conversation != null){
-            message.map {
-                customMapper.conversationDto(conversationEntity = conversation, messageEntity = message)
-            }
-        } else {
-            null
+        return message?.map { ms ->
+            customMapper.messageDto(messageEntity = ms)
         }
     }
 
+    fun getAllConversation(userId: Long): List<ConversationDTO>? {
+        return conversationRepository.findAllConversationByUserId(userId)
+    }
 
     fun createConversation(userId: Long, friendId: Long, message: String){
         val user = userRepository.findById(userId).get()

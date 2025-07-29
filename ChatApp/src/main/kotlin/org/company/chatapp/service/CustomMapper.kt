@@ -37,15 +37,6 @@ class CustomMapper {
         isRead = messageEntity.isRead,
     )
 
-    fun conversationDto(conversationEntity: ConversationEntity, messageEntity: List<MessageEntity>): ConversationDTO = ConversationDTO(
-        conversationName = conversationEntity.conversationName,
-        memberIds = conversationEntity.memberIds,
-        avatar = conversationEntity.avatar,
-        createAt = conversationEntity.createdAt,
-        numberMembers = conversationEntity.numberMembers,
-        messages = messageEntity.map { messageDto(it) }
-    )
-
     fun conversationEntity(conversationName: String?, avatar: String?, numberMembers: Int, memberIds: List<Long>, createdAt: Instant): ConversationEntity = ConversationEntity(
         avatar = avatar,
         numberMembers = numberMembers,

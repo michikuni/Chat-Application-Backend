@@ -15,7 +15,7 @@ data class MessageEntity(
     val conversationId: ConversationEntity,
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "sender_id")
     val senderId: UserEntity,
 
     @Column(name = "content")
