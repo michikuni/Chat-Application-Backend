@@ -50,14 +50,18 @@ class FriendController(
 
     }
 
-//    // (Tuỳ chọn) Huỷ lời mời kết bạn
-//    @DeleteMapping("/cancel/{friendshipId}")
-//    fun cancelFriendRequest(
-//        @PathVariable friendshipId: Long
-//    ): ResponseEntity<String> {
-//        friendService.cancelFriendRequest(friendshipId)
-//        return ResponseEntity.ok("Đã huỷ lời mời kết bạn")
-//    }
+    // (Tuỳ chọn) Huỷ lời mời kết bạn
+    @PostMapping("/cancel/{friendshipId}")
+    fun cancelFriendRequest(
+        @PathVariable friendshipId: Long
+    ): ResponseEntity<String> {
+        friendService.cancelFriendRequest(friendshipId)
+        return try {
+            ResponseEntity.ok("Đã huỷ lời mời kết bạn")
+        } catch (e: IllegalArgumentException){
+            ResponseEntity.badRequest().body(e.message)
+        }
+    }
 //
 //    // (Tuỳ chọn) Lấy danh sách bạn bè của một user
 //    @GetMapping("/list/{userId}")

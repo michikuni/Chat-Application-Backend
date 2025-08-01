@@ -25,3 +25,8 @@ data class GetConversation(
     val numberMembers: Int,
     val createdAt: Timestamp,
 )
+
+enum class ConversationType{
+    PAIR,
+    GROUP
+}

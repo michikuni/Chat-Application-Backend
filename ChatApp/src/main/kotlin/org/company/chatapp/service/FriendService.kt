@@ -17,26 +17,40 @@ class FriendService(
     private val customMapper: CustomMapper,
     private val userRepository: UserRepository
 ){
-    fun sendFriendRequest(senderId: Long, receiverEmail: String): FriendsEntity {
+    fun sendFriendRequest(senderId: Long, receiverEmail: String) {
         val sender = userService.getUserById(senderId)
             ?: throw IllegalArgumentException("Không tìm thấy người gửi")
 
         val receiver = userService.getUserByEmail(receiverEmail)
             ?: throw IllegalArgumentException("Không tìm thấy người nhận")
 
-        if (friendshipRepository.findBetweenUsers(senderId, receiver.id) != null) {
-            throw IllegalArgumentException("Đã gửi lời mời hoặc đã là bạn bè")
+        val friendship = friendshipRepository.findBetweenUsers(senderId, receiver.id)
+        if (friendship != null) {
+            if (friendship.status == FriendshipStatus.ACCEPTED || friendship.status == FriendshipStatus.PENDING) {
+                throw IllegalArgumentException("Đã gửi lời mời hoặc đã là bạn bè")
+            } else if (friendship.status == FriendshipStatus.DECLINED) {
+                val updated = friendship.copy(status = FriendshipStatus.PENDING, createdAt = Instant.now())
+                friendshipRepository.save(updated)
+            }
+        } else {
+            friendshipRepository.save(
+                FriendsEntity(user = sender, friend = receiver, status = FriendshipStatus.PENDING, createdAt = Instant.now())
+            )
         }
-        return friendshipRepository.save(
-            FriendsEntity(user = sender, friend = receiver, status = FriendshipStatus.PENDING, createdAt = Instant.now())
-        )
     }
 
     fun acceptFriendRequest(friendshipId: Long): FriendsEntity {
         val friendship = friendshipRepository.findById(friendshipId)
             .orElseThrow { IllegalArgumentException("Không tìm thấy lời mời kết bạn") }
 
-        val updated = friendship.copy(status = FriendshipStatus.ACCEPTED)
+        val updated = friendship.copy(status = FriendshipStatus.ACCEPTED, createdAt = Instant.now())
+        return friendshipRepository.save(updated)
+    }
+
+    fun cancelFriendRequest(friendshipId: Long): FriendsEntity {
+        val friendship = friendshipRepository.findById(friendshipId)
+            .orElseThrow { IllegalArgumentException("Không tìm thấy id bạn bè") }
+        val updated = friendship.copy(status = FriendshipStatus.DECLINED, createdAt = Instant.now())
         return friendshipRepository.save(updated)
     }
 
