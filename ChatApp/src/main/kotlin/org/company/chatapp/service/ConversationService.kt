@@ -31,14 +31,19 @@ class ConversationService(
     fun createConversation(userId: Long, friendId: Long, message: String){
         val user = userRepository.findById(userId).get()
         val friend = userRepository.findById(friendId).get()
-        val conversationId = conversationRepository.findConversationBetweenUsers(userId, friendId)
+        var conversationId = conversationRepository.findConversationBetweenUsers(userId, friendId)
+        var conversation: ConversationEntity? = null
+
         if(conversationId == null){
-            conversationRepository.save(customMapper.conversationEntity(
+            conversation = conversationRepository.save(customMapper.conversationEntity(
                 avatar = friend.avatar, numberMembers = 2,
                 conversationName = friend.name,
                 memberIds = listOf(user.id, friend.id), createdAt = Instant.now()))
+            conversationId = conversation.id
+        } else {
+            conversation = conversationRepository.findById(conversationId).get()
         }
-        val conversation = conversationId?.let { conversationRepository.findById(it).get() }
+
         if(conversation != null){
             messageRepository.save(customMapper.messageEntity(
                 createdAt = Instant.now(),
