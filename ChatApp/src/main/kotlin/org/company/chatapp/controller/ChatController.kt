@@ -28,11 +28,7 @@ class ChatController (
         @RequestParam friendId: Long
     ): ResponseEntity<List<MessageDTO>> {
         val conversation = conversationService.getAllMessage(userId, friendId)
-        return if (conversation != null) {
-            ResponseEntity.ok(conversation)
-        } else {
-            ResponseEntity.notFound().build()
-        }
+        return ResponseEntity.ok(conversation ?: emptyList())
     }
 
     @GetMapping("/allConversation/{userId}")

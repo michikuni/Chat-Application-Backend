@@ -28,9 +28,13 @@ class FriendService(
         if (friendship != null) {
             if (friendship.status == FriendshipStatus.ACCEPTED || friendship.status == FriendshipStatus.PENDING) {
                 throw IllegalArgumentException("Đã gửi lời mời hoặc đã là bạn bè")
-            } else if (friendship.status == FriendshipStatus.DECLINED) {
+            } else if (friendship.status == FriendshipStatus.DECLINED && friendship.user.id == senderId) {
                 val updated = friendship.copy(status = FriendshipStatus.PENDING, createdAt = Instant.now())
                 friendshipRepository.save(updated)
+            } else if (friendship.status == FriendshipStatus.DECLINED && friendship.user.id != senderId) {
+                friendshipRepository.save(
+                    FriendsEntity(user = sender, friend = receiver, status = FriendshipStatus.PENDING, createdAt = Instant.now())
+                )
             }
         } else {
             friendshipRepository.save(
