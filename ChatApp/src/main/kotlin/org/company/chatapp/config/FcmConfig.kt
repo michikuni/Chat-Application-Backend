@@ -17,7 +17,7 @@ class FcmConfig {
         val options = FirebaseOptions.builder()
             .setCredentials(GoogleCredentials.fromStream(serviceAccount))
             .build()
-        return FirebaseApp.initializeApp(options)
+        return FirebaseApp.getApps().firstOrNull() ?: FirebaseApp.initializeApp(options)
     }
 
     @Bean
