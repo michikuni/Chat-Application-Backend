@@ -17,6 +17,8 @@ bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 
+ChatApp/src/main/resources/mir-communicate-firebase-adminsdk-*.json
+
 ### IntelliJ IDEA ###
 .idea
 *.iws

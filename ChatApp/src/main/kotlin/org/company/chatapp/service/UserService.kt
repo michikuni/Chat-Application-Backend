@@ -59,11 +59,12 @@ class UserService(
                 }
             }
         }
-        println("GET ALL USERS SUCCESS")
         return friendship.mapNotNull { id ->
             userRepository.findById(id).map { customMapper.userToDto(it) }.orElse(null)
         }
     }
+
+    fun setAvatar(userDTO: UserDTO, avatar:String){}
 
     fun getAllUser(): List<UserEntity> {
         return userRepository.findAll()
