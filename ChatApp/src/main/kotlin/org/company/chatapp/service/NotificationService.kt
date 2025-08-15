@@ -12,9 +12,9 @@ class NotificationService (
     private val userFcmTokenService: UserFcmTokenService,
     private val userService: UserService
 ){
-    fun sendMessageNotification(userId: Long, messages: String){
+    fun sendMessageNotification(userId: Long, messages: String, friendId: Long){
         val tokens = userFcmTokenService.getTokensByUserId(userId)
-        val userName = userService.getUserById(userId)?.name
+        val userName = userService.getUserById(friendId)?.name
         val message =MulticastMessage.builder()
             .setNotification(
                 Notification.builder()

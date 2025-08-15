@@ -62,15 +62,6 @@ class FriendController(
             ResponseEntity.badRequest().body(e.message)
         }
     }
-//
-//    // (Tuỳ chọn) Lấy danh sách bạn bè của một user
-//    @GetMapping("/list/{userId}")
-//    fun listFriends(
-//        @PathVariable userId: Long
-//    ): ResponseEntity<List<UserEntity>> {
-//        val friends = friendService.getAcceptedFriends(userId)
-//        return ResponseEntity.ok(friends)
-//    }
 
     @GetMapping("/pending/{userId}")
     fun listPending(

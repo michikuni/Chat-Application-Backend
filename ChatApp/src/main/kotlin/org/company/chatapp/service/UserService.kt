@@ -64,7 +64,18 @@ class UserService(
         }
     }
 
-    fun setAvatar(userDTO: UserDTO, avatar:String){}
+    fun updateAvatar(userId: Long, avatarUrl:String): UserEntity{
+        val user = userRepository.findById(userId)
+            .orElseThrow { RuntimeException("User not found") }
+        val userData = user.copy(avatar = avatarUrl)
+        return userRepository.save(userData)
+    }
+
+    fun getAvatar(userId: Long): String? {
+        val user = userRepository.findById(userId)
+        .orElseThrow { RuntimeException("User not found") }
+        return user.avatar
+    }
 
     fun getAllUser(): List<UserEntity> {
         return userRepository.findAll()

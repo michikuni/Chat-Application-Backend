@@ -49,7 +49,7 @@ class ConversationService(
             senderId = user,
             content = message,
             isSent = false))
-        notificationService.sendMessageNotification(userId = friendId, messages = message)
+        notificationService.sendMessageNotification(userId = friendId, messages = message, friendId = userId)
     }
     fun getConversationById(id: Long): ConversationEntity? {
         return conversationRepository.findById(id)

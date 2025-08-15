@@ -27,7 +27,7 @@ data class UserEntity(
     val role: String = "USER",
 
     @Column(name = "avatar" ,nullable = true)
-    val avatar: String? = null,
+    var avatar: String? = null,
 
     @Column(name = "createAt" ,nullable = false)
     val createAt: Instant = Instant.now(),
