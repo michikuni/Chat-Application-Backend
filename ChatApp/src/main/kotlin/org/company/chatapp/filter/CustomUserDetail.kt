@@ -11,6 +11,7 @@ class CustomUserDetails(
     override fun getAuthorities(): Collection<GrantedAuthority> {
         return listOf(SimpleGrantedAuthority("ROLE_USER"))
     }
+    fun getId(): Long = user.id
 
     override fun getPassword() = user.password
     override fun getUsername() = user.username

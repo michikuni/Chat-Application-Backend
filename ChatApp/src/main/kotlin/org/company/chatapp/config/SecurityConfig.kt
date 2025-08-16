@@ -26,7 +26,13 @@ class SecurityConfig {
             .csrf { it.disable() }
             .authorizeHttpRequests {
                 it
-                    .requestMatchers("/api/auth/**", "/error", "/api/fcm/**").permitAll()
+                    .requestMatchers(
+                        "/api/auth/**",
+                        "/error",
+                        "/api/fcm/**",
+                        "/api/users/get_avatar/**",
+                        "/api/users/upload_avatar/**"
+                    ).permitAll()
                     .anyRequest().authenticated()
             }
             .sessionManagement {
