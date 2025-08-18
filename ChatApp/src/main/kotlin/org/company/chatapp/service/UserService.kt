@@ -40,6 +40,12 @@ class UserService(
         return userRepository.save(userData)
     }
 
+    fun getUserInfo(userId: Long): UserDTO {
+        val user = userRepository.findById(userId)
+        .orElseThrow { RuntimeException("User not found") }
+        return customMapper.userToDto(user)
+    }
+
     fun getAvatar(userId: Long): String? {
         val user = userRepository.findById(userId)
         .orElseThrow { RuntimeException("User not found") }

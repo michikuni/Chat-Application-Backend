@@ -3,7 +3,6 @@ package org.company.chatapp.controller
 import org.company.chatapp.DTO.UserDTO
 import org.company.chatapp.filter.CustomUserDetails
 import org.company.chatapp.service.UserService
-import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
@@ -63,10 +62,22 @@ class UserController (
         }
     }
 
-
+    @GetMapping("/get_user_info/{userId}")
+    fun getUserInfo(
+        @PathVariable userId: Long
+    ): ResponseEntity<UserDTO> {
+        val response = userService.getUserInfo(userId = userId)
+        return try {
+            ResponseEntity.ok(response)
+        } catch (e: RuntimeException){
+            ResponseEntity.notFound().build()
+        }
+    }
 
     @GetMapping("/get_avatar/{userId}")
-    fun getAvatar(@PathVariable userId: Long): ResponseEntity<Any> {
+    fun getAvatar(
+        @PathVariable userId: Long
+    ): ResponseEntity<Any> {
         return try {
             val user = userService.getUserById(userId)
                 ?: return ResponseEntity.notFound().build()
