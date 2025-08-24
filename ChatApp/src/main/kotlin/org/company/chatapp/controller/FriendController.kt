@@ -5,21 +5,13 @@ import org.company.chatapp.service.FriendService
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @RequestMapping("/api/friends")
 class FriendController(
     val friendService: FriendService
 ){
-    @GetMapping("/test")
-    fun testFriends(): String = "OK"
-    @GetMapping("/test1")
-    fun testAuth(): ResponseEntity<String> {
-        val auth = SecurityContextHolder.getContext().authentication
-        println("===> In controller, user: ${auth.name}, roles: ${auth.authorities}")
-        return ResponseEntity.ok("You are authenticated")
-    }
-
     // Gửi lời mời kết bạn
     @PostMapping("/add/{senderId}")
     fun sendFriendRequest(
@@ -33,6 +25,8 @@ class FriendController(
             ResponseEntity.ok("Gửi lời mời kết bạn thành công")
         } catch (e: IllegalArgumentException){
             ResponseEntity.badRequest().body(e.message)
+        } catch (e: ResponseStatusException){
+            ResponseEntity.badRequest().body(e.message)
         }
     }
 
@@ -44,7 +38,7 @@ class FriendController(
         return try {
             friendService.acceptFriendRequest(friendshipId)
             ResponseEntity.ok("Đã chấp nhận lời mời kết bạn")
-        } catch (e: IllegalArgumentException){
+        } catch (e: ResponseStatusException){
             ResponseEntity.badRequest().body(e.message)
         }
 
@@ -58,7 +52,7 @@ class FriendController(
         friendService.cancelFriendRequest(friendshipId)
         return try {
             ResponseEntity.ok("Đã huỷ lời mời kết bạn")
-        } catch (e: IllegalArgumentException){
+        } catch (e: ResponseStatusException){
             ResponseEntity.badRequest().body(e.message)
         }
     }
@@ -68,15 +62,23 @@ class FriendController(
         @PathVariable userId: Long
     ): ResponseEntity<List<FriendsDTO?>> {
         val pending = friendService.getAllPendingFriends(userId)
-        return ResponseEntity.ok(pending)
+        return try {
+            ResponseEntity.ok(pending)
+        } catch (e: ResponseStatusException){
+            ResponseEntity.badRequest().build()
+        }
     }
 
     @GetMapping("/request/{userId}")
     fun listRequests(
         @PathVariable userId: Long
     ): ResponseEntity<List<FriendsDTO?>> {
-        val pending = friendService.getAllRequestedFriends(userId)
-        return ResponseEntity.ok(pending)
+        val request = friendService.getAllRequestedFriends(userId)
+        return try {
+            ResponseEntity.ok(request)
+        } catch (e: ResponseStatusException){
+            ResponseEntity.badRequest().build()
+        }
     }
 
     @GetMapping("/getFriendByEmail/{userId}")

@@ -26,13 +26,16 @@ class CustomMapper {
         avatar = userEntity.avatar
     )
 
-    fun messageDto(messageEntity: MessageEntity): MessageDTO = MessageDTO(
-        senderId = userToDto(messageEntity.senderId),
-        content = messageEntity.content,
-        createdAt = Timestamp.from(messageEntity.createdAt),
-        conversationId = conversationDto(messageEntity.conversationId),
-        isRead = messageEntity.isRead,
-    )
+    fun messageDto(messageEntity: MessageEntity): MessageDTO{
+        return MessageDTO(
+            senderId = userToDto(messageEntity.senderId),
+            content = messageEntity.content,
+            mediaFile = messageEntity.mediaFile,
+            createdAt = Timestamp.from(messageEntity.createdAt),
+            conversationId = conversationDto(messageEntity.conversationId),
+            isRead = messageEntity.isRead,
+        )
+    }
 
     fun conversationDto(conversationEntity: ConversationEntity): GetConversation = GetConversation(
         id = conversationEntity.id,
@@ -51,10 +54,11 @@ class CustomMapper {
         createdAt = Instant.now()
     )
 
-    fun messageEntity(conversationId: ConversationEntity, senderId: UserEntity, isSent: Boolean, content: String, createdAt: Instant): MessageEntity = MessageEntity(
+    fun messageEntity(conversationId: ConversationEntity, senderId: UserEntity, isSent: Boolean, content: String?, mediaFile: String?, createdAt: Instant): MessageEntity = MessageEntity(
         conversationId = conversationId,
         senderId = senderId,
         content = content,
+        mediaFile = mediaFile,
         createdAt = Instant.now(),
         isRead = isSent,
     )

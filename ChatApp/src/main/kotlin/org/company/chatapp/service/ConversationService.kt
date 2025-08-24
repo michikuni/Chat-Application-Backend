@@ -3,6 +3,7 @@ package org.company.chatapp.service
 import org.company.chatapp.DTO.ConversationDTO
 import org.company.chatapp.DTO.MessageDTO
 import org.company.chatapp.entity.ConversationEntity
+import org.company.chatapp.entity.UserEntity
 import org.company.chatapp.repository.*
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -17,42 +18,66 @@ class ConversationService(
     private val customMapper: CustomMapper,
     private val notificationService: NotificationService
 ){
-    fun getAllMessage(userId: Long, friendId: Long): List<MessageDTO>? {
+    fun getAllMessage(userId: Long, friendId: Long): List<MessageDTO> {
         val conversationId = conversationRepository.findConversationBetweenUsers(userId, friendId)
-        val message = conversationId?.let { messageRepository.findMessageByConversationId(it) }
-        return message?.map { ms ->
-            customMapper.messageDto(messageEntity = ms)
-        }
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy id hội thoại")
+        val message = messageRepository.findMessageByConversationId(conversationId)
+        return message.map { customMapper.messageDto(
+            messageEntity = it
+        ) }
     }
 
-    fun getAllConversation(userId: Long): List<ConversationDTO>? {
+    fun getAllConversation(userId: Long): List<ConversationDTO> {
         return conversationRepository.findAllConversationByUserId(userId)
     }
 
     fun createConversation(userId: Long, friendId: Long, message: String){
-        val user = userRepository.findById(userId).get()
-        val friend = userRepository.findById(friendId).get()
-        val conversationId = conversationRepository.findConversationBetweenUsers(userId, friendId)
-        var conversation: ConversationEntity? = null
-
-        if(conversationId == null){
-            conversation = conversationRepository.save(customMapper.conversationEntity(
-                avatar = friend.avatar, numberMembers = 2,
-                conversationName = friend.name,
-                memberIds = listOf(user.id, friend.id), createdAt = Instant.now()))
-        } else {
-            conversation = conversationRepository.findById(conversationId).get()
-        }
+        val (user, conversation) = getOrCreateConversation(userId, friendId)
         messageRepository.save(customMapper.messageEntity(
             createdAt = Instant.now(),
             conversationId = conversation,
             senderId = user,
             content = message,
+            mediaFile = null,
             isSent = false))
-        notificationService.sendMessageNotification(userId = friendId, messages = message, friendId = userId)
+        notificationService.sendMessageNotification(
+            userId = friendId,
+            messages = message,
+            friendId = userId)
     }
-    fun getConversationById(id: Long): ConversationEntity? {
-        return conversationRepository.findById(id)
-            .orElseThrow { throw ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy người dùng với id: $id") }
+    fun sendMediaFile(userId: Long, friendId: Long, mediaFile: String){
+        val (user, conversation) = getOrCreateConversation(userId, friendId)
+        messageRepository.save(customMapper.messageEntity(
+            createdAt = Instant.now(),
+            conversationId = conversation,
+            senderId = user,
+            content = null,
+            mediaFile = mediaFile,
+            isSent = false))
+        notificationService.sendMessageNotification(
+            userId = friendId,
+            messages = "Đã gửi một tệp đa phương tiện",
+            friendId = userId)
     }
+
+    private fun getOrCreateConversation(userId: Long, friendId: Long): Pair<UserEntity, ConversationEntity> {
+        val user = userRepository.findById(userId).get()
+        val friend = userRepository.findById(friendId).get()
+        val conversationId = conversationRepository.findConversationBetweenUsers(userId, friendId)
+
+        val conversation = if (conversationId == null) {
+            conversationRepository.save(customMapper.conversationEntity(
+                avatar = friend.avatar,
+                numberMembers = 2,
+                conversationName = friend.name,
+                memberIds = listOf(user.id, friend.id),
+                createdAt = Instant.now()
+            ))
+        } else {
+            conversationRepository.findById(conversationId).get()
+        }
+
+        return user to conversation
+    }
+
 }

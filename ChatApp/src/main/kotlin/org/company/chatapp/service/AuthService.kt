@@ -7,8 +7,10 @@ import org.company.chatapp.DTO.toEntity
 import org.company.chatapp.entity.UserEntity
 import org.company.chatapp.repository.UserRepository
 import org.company.chatapp.utils.JwtUtils
+import org.springframework.http.HttpStatus
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
+import org.springframework.web.server.ResponseStatusException
 
 @Service
 class AuthService (
@@ -31,7 +33,7 @@ class AuthService (
 
     fun login (login: LoginDTO): LoginResponseDTO {
         val user = userRepository.findByUsername(login.username)
-            ?: throw NullPointerException("Tài khoản không tồn tại")
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Người dùng không tồn tại")
         if(passwordEncoder.matches(login.password, user.password)) {
             return LoginResponseDTO(
                 id = user.id,
@@ -39,12 +41,7 @@ class AuthService (
                 token = jwtUtils.generateToken(user.username)
             )
         } else {
-            throw Exception("Tài khoản hoặc mật khẩu không đúng")
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Tài khoản hoặc mật khẩu không đúng")
         }
-    }
-
-    fun checkTokenValid(token: String, user: String): Boolean{
-        val tokenValid = jwtUtils.validateToken(token = token, user = user)
-        return tokenValid
     }
 }

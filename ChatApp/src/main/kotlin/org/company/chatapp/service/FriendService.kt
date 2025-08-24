@@ -19,10 +19,10 @@ class FriendService(
 ){
     fun sendFriendRequest(senderId: Long, receiverEmail: String) {
         val sender = userService.getUserById(senderId)
-            ?: throw IllegalArgumentException("Không tìm thấy người gửi")
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy người gửi")
 
         val receiver = userService.getUserByEmail(receiverEmail)
-            ?: throw IllegalArgumentException("Không tìm thấy người nhận")
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy người nhận")
 
         val friendship = friendshipRepository.findBetweenUsers(senderId, receiver.id)
         if (friendship != null) {
@@ -45,7 +45,7 @@ class FriendService(
 
     fun acceptFriendRequest(friendshipId: Long): FriendsEntity {
         val friendship = friendshipRepository.findById(friendshipId)
-            .orElseThrow { IllegalArgumentException("Không tìm thấy lời mời kết bạn") }
+            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy lời mời kết bạn") }
 
         val updated = friendship.copy(status = FriendshipStatus.ACCEPTED, createdAt = Instant.now())
         return friendshipRepository.save(updated)
@@ -53,7 +53,7 @@ class FriendService(
 
     fun cancelFriendRequest(friendshipId: Long): FriendsEntity {
         val friendship = friendshipRepository.findById(friendshipId)
-            .orElseThrow { IllegalArgumentException("Không tìm thấy id bạn bè") }
+            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy id bạn bè") }
         val updated = friendship.copy(status = FriendshipStatus.DECLINED, createdAt = Instant.now())
         return friendshipRepository.save(updated)
     }
@@ -85,12 +85,5 @@ class FriendService(
         }
         return friend?.let { customMapper.friendshipDto(userEntity = it, friendshipId = friendshipId) }
     }
-
-    fun getFriendship(id: Long): Long{
-        val friendship = friendshipRepository.findById(id)
-            .orElseThrow { throw ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with id: $id") }
-        return friendship.user.id
-    }
-
 
 }

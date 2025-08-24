@@ -34,5 +34,5 @@ interface ConversationRepository: JpaRepository<ConversationEntity, Long>{
             ") last_msg ON ms.conversation_id = last_msg.conversation_id AND ms.created_at = last_msg.latest_time " +
             "WHERE cm.user_id = :userId AND cm1.user_id != :userId " +
             "ORDER BY ms.created_at DESC;", nativeQuery = true)
-    fun findAllConversationByUserId(@Param("userId") userId: Long): List<ConversationDTO>?
+    fun findAllConversationByUserId(@Param("userId") userId: Long): List<ConversationDTO>
 }

@@ -19,7 +19,10 @@ data class MessageEntity(
     val senderId: UserEntity,
 
     @Column(name = "content")
-    val content: String,
+    val content: String? = null,
+
+    @Column(name = "media_file")
+    val mediaFile: String? = null,
 
     @Column(name = "created_at", nullable = false)
     val createdAt: Instant = Instant.now(),

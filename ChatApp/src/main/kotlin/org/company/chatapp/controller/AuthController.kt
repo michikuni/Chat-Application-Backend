@@ -4,10 +4,10 @@ import jakarta.servlet.http.HttpServletRequest
 import org.company.chatapp.DTO.LoginDTO
 import org.company.chatapp.DTO.RegisterDTO
 import org.company.chatapp.service.AuthService
-import org.company.chatapp.service.UserService
 import org.company.chatapp.utils.JwtUtils
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @RequestMapping("/api/auth")
@@ -33,9 +33,7 @@ class AuthController(
     ): ResponseEntity<Any> {
         return try {
             ResponseEntity.ok(authService.login(loginRequestDTO))
-        } catch (e: NullPointerException){
-            ResponseEntity.badRequest().body(e.message)
-        } catch (e: Exception){
+        } catch (e: ResponseStatusException){
             ResponseEntity.badRequest().body(e.message)
         }
     }

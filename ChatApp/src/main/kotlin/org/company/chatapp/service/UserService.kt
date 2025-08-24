@@ -35,20 +35,20 @@ class UserService(
 
     fun updateAvatar(userId: Long, avatarUrl:String): UserEntity{
         val user = userRepository.findById(userId)
-            .orElseThrow { RuntimeException("User not found") }
+            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "User not found") }
         val userData = user.copy(avatar = avatarUrl)
         return userRepository.save(userData)
     }
 
     fun getUserInfo(userId: Long): UserDTO {
         val user = userRepository.findById(userId)
-        .orElseThrow { RuntimeException("User not found") }
+        .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "User not found") }
         return customMapper.userToDto(user)
     }
 
     fun getAvatar(userId: Long): String? {
         val user = userRepository.findById(userId)
-        .orElseThrow { RuntimeException("User not found") }
+        .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "User not found") }
         return user.avatar
     }
 

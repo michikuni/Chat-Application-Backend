@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
+import org.springframework.web.server.ResponseStatusException
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -56,7 +57,7 @@ class UserController (
             userService.updateAvatar(userId, fileName)
 
             ResponseEntity.ok("Cập nhật avatar thành công")
-        } catch (e: Exception) {
+        } catch (e: ResponseStatusException) {
             e.printStackTrace()
             ResponseEntity.badRequest().body("Lỗi khi upload avatar: ${e.message}")
         }
@@ -69,7 +70,7 @@ class UserController (
         val response = userService.getUserInfo(userId = userId)
         return try {
             ResponseEntity.ok(response)
-        } catch (e: RuntimeException){
+        } catch (e: ResponseStatusException){
             ResponseEntity.notFound().build()
         }
     }
@@ -100,8 +101,8 @@ class UserController (
                 .contentType(MediaType.parseMediaType(contentType))
                 .body(bytes)
         } catch (e: Exception) {
-            e.printStackTrace()
-            ResponseEntity.status(500).body("Lỗi khi load avatar: ${e.message}")
+            println("Người dùng với ID: $userId không có avatar")
+            ResponseEntity.status(500).build()
         }
     }
 
