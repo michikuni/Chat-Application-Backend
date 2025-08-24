@@ -7,7 +7,8 @@ data class ConversationDTO(
     val userId: Long,
     val name: String,
     val avatar: String,
-    val content: String,
+    val content: String?,
+    val mediaFile: String?,
     val createdAt: Timestamp,
     val isRead: Boolean,
 )

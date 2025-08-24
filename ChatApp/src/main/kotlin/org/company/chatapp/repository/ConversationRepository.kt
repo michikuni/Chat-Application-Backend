@@ -21,7 +21,7 @@ interface ConversationRepository: JpaRepository<ConversationEntity, Long>{
     )
     fun findConversationBetweenUsers(@Param("userId") userId: Long, @Param("friendId") friendId: Long): Long?
 
-    @Query("SELECT cs.id, cm1.user_id, us.name, us.avatar, ms.content, ms.created_at, ms.is_sent " +
+    @Query("SELECT cs.id, cm1.user_id, us.name, us.avatar, ms.content, ms.media_file, ms.created_at, ms.is_sent " +
             "FROM conversation cs " +
             "JOIN chat_members cm ON cs.id = cm.conversation_id " +
             "JOIN chat_members cm1 ON cm.conversation_id = cm1.conversation_id " +
