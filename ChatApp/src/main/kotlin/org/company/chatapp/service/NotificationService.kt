@@ -16,12 +16,8 @@ class NotificationService (
         val tokens = userFcmTokenService.getTokensByUserId(userId)
         val userName = userService.getUserById(friendId)?.name
         val message =MulticastMessage.builder()
-            .setNotification(
-                Notification.builder()
-                    .setTitle(userName)
-                    .build()
-            )
             .addAllTokens(tokens)
+            .putData("name", userName)
             .putData("userId", userId.toString())
             .putData("message", messages)
             .putData("time", System.currentTimeMillis().toString())

@@ -80,4 +80,11 @@ class ConversationService(
         return user to conversation
     }
 
+    fun getConversationMedia(conversationId: Long): List<MessageDTO>{
+        val messages = messageRepository.findMessageByConversationId(conversationId)
+            .filter { it.mediaFile != null }
+            .map { customMapper.messageDto(it) }
+        return messages
+    }
+
 }

@@ -31,7 +31,8 @@ class SecurityConfig {
                         "/error",
                         "/api/fcm/**",
                         "/api/users/get_avatar/**",
-                        "/api/users/upload_avatar/**"
+                        "/api/users/upload_avatar/**",
+                        "/api/chats/getMediaFile/**"
                     ).permitAll()
                     .anyRequest().authenticated()
             }

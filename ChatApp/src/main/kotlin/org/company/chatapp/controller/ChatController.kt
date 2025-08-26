@@ -5,11 +5,13 @@ import org.company.chatapp.DTO.CreateConversation
 import org.company.chatapp.DTO.MessageDTO
 import org.company.chatapp.repository.ConversationRepository
 import org.company.chatapp.service.ConversationService
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.server.ResponseStatusException
 import java.io.File
+import java.nio.file.Files
 import java.nio.file.Paths
 
 
@@ -70,6 +72,30 @@ class ChatController(
 
         conversationService.sendMediaFile(userId = userId, friendId = friendId, mediaFile = filename)
         return ResponseEntity.ok("Gửi tin nhắn phương tiện thành công")
+    }
+
+    @GetMapping("/getMediaFile/{fileName}")
+    fun getMediaFile(
+        @PathVariable fileName: String
+    ): ResponseEntity<ByteArray> {
+        return try {
+            val parts = fileName.split("_")
+            val conversationId = parts[0]
+            val imageFile = Paths.get(System.getProperty("user.dir"), conversationId, fileName).toFile()
+
+            if (!imageFile.exists()){
+                return ResponseEntity.notFound().build()
+            }
+
+            val bytes = imageFile.readBytes()
+            val contentType = Files.probeContentType(imageFile.toPath()) ?: "applicaton/octet-stream"
+
+            ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .body(bytes)
+        } catch (e: Exception){
+            ResponseEntity.status(500).build()
+        }
     }
 
 }
