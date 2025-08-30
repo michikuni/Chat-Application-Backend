@@ -26,4 +26,7 @@ data class ConversationEntity(
 
     @Column(name = "created_at", nullable = false)
     val createdAt: Instant = Instant.now(),
+
+    @Column(name = "theme_color")
+    val themeColor: String? = null,
 )

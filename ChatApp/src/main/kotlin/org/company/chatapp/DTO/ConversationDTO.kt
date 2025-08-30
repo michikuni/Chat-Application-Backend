@@ -5,12 +5,14 @@ import java.sql.Timestamp
 data class ConversationDTO(
     val id: Long,
     val userId: Long,
+    val senderId: Long,
     val name: String,
     val avatar: String,
     val content: String?,
     val mediaFile: String?,
     val createdAt: Timestamp,
     val isRead: Boolean,
+    val themeColor: String?,
 )
 
 data class CreateConversation(

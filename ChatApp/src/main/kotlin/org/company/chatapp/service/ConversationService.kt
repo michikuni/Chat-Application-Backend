@@ -45,6 +45,7 @@ class ConversationService(
             messages = message,
             friendId = userId)
     }
+
     fun sendMediaFile(userId: Long, friendId: Long, mediaFile: String){
         val (user, conversation) = getOrCreateConversation(userId, friendId)
         messageRepository.save(customMapper.messageEntity(
@@ -58,6 +59,13 @@ class ConversationService(
             userId = friendId,
             messages = "Đã gửi một tệp đa phương tiện",
             friendId = userId)
+    }
+
+    fun themeConversation(conversationId: Long, colors: List<String>){
+        val conversation = conversationRepository.findById(conversationId).get()
+        val color = listToJson(colors)
+        val updateTheme = conversation.copy(themeColor = color)
+        conversationRepository.save(updateTheme)
     }
 
     private fun getOrCreateConversation(userId: Long, friendId: Long): Pair<UserEntity, ConversationEntity> {
@@ -76,7 +84,6 @@ class ConversationService(
         } else {
             conversationRepository.findById(conversationId).get()
         }
-
         return user to conversation
     }
 
@@ -86,5 +93,23 @@ class ConversationService(
             .map { customMapper.messageDto(it) }
         return messages
     }
+    private fun listToJson(list: List<String>): String {
+        return list.joinToString(
+            prefix = "[",
+            postfix = "]",
+            separator = ","
+        ) { "\"$it\"" }
+    }
+
+    private fun jsonToList(json: String): List<String> {
+        return json
+            .removePrefix("[")
+            .removeSuffix("]")
+            .split(",")
+            .map { it.trim().removeSurrounding("\"") }
+            .filter { it.isNotBlank() }
+    }
+
+
 
 }

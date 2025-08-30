@@ -5,6 +5,7 @@ import org.company.chatapp.DTO.CreateConversation
 import org.company.chatapp.DTO.MessageDTO
 import org.company.chatapp.repository.ConversationRepository
 import org.company.chatapp.service.ConversationService
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -51,6 +52,15 @@ class ChatController(
         return ResponseEntity.ok("Tạo đoạn chat thành công")
     }
 
+    @PostMapping("/updateTheme/{conversationId}")
+    fun themeConversation(
+        @PathVariable conversationId: Long,
+        @RequestBody colors: List<String>
+    ): ResponseEntity<Any> {
+        conversationService.themeConversation(conversationId = conversationId, colors = colors)
+        return ResponseEntity(HttpStatus.OK)
+    }
+
     @PostMapping("/sendMediaFile/{userId}")
     fun sendMediaFile(
         @PathVariable userId: Long,
@@ -59,7 +69,7 @@ class ChatController(
     ): ResponseEntity<Any> {
         val conversation = conversationRepository.findConversationBetweenUsers(userId = userId, friendId = friendId)
         val filename = "${conversation}_${userId}_${file.originalFilename}"
-        val uploadDir = Paths.get(System.getProperty("user.dir"), conversation.toString()).toFile()
+        val uploadDir = Paths.get(System.getProperty("user.dir"), "conversation_media/${conversation.toString()}").toFile()
 
         if (!uploadDir.exists()) {
             uploadDir.mkdirs()
@@ -81,7 +91,7 @@ class ChatController(
         return try {
             val parts = fileName.split("_")
             val conversationId = parts[0]
-            val imageFile = Paths.get(System.getProperty("user.dir"), conversationId, fileName).toFile()
+            val imageFile = Paths.get(System.getProperty("user.dir"), "conversation_media/$conversationId", fileName).toFile()
 
             if (!imageFile.exists()){
                 return ResponseEntity.notFound().build()
