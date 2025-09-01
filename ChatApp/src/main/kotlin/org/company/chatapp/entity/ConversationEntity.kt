@@ -1,6 +1,9 @@
 package org.company.chatapp.entity
 
+import com.vladmihalcea.hibernate.type.json.JsonType
 import jakarta.persistence.*
+import org.company.chatapp.DTO.ConversationType
+import org.hibernate.annotations.Type
 import java.time.Instant
 
 @Entity
@@ -27,6 +30,10 @@ data class ConversationEntity(
     @Column(name = "created_at", nullable = false)
     val createdAt: Instant = Instant.now(),
 
-    @Column(name = "theme_color")
-    val themeColor: String? = null,
+    @Type(JsonType::class)
+    @Column(columnDefinition = "json")
+    val themeColor: List<String>? = null,
+
+    @Enumerated(EnumType.STRING)
+    val conversationType: ConversationType = ConversationType.PAIR
 )

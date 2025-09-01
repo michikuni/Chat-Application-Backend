@@ -46,6 +46,16 @@ class ConversationService(
             friendId = userId)
     }
 
+    fun createGroupConversation(members: List<Long>, name: String){
+        conversationRepository.save(customMapper.conversationEntity(
+            createdAt = Instant.now(),
+            conversationName = name,
+            avatar = null,
+            numberMembers = members.size,
+            memberIds = members
+        ))
+    }
+
     fun sendMediaFile(userId: Long, friendId: Long, mediaFile: String){
         val (user, conversation) = getOrCreateConversation(userId, friendId)
         messageRepository.save(customMapper.messageEntity(
@@ -63,8 +73,7 @@ class ConversationService(
 
     fun themeConversation(conversationId: Long, colors: List<String>){
         val conversation = conversationRepository.findById(conversationId).get()
-        val color = listToJson(colors)
-        val updateTheme = conversation.copy(themeColor = color)
+        val updateTheme = conversation.copy(themeColor = colors)
         conversationRepository.save(updateTheme)
     }
 
@@ -86,30 +95,5 @@ class ConversationService(
         }
         return user to conversation
     }
-
-    fun getConversationMedia(conversationId: Long): List<MessageDTO>{
-        val messages = messageRepository.findMessageByConversationId(conversationId)
-            .filter { it.mediaFile != null }
-            .map { customMapper.messageDto(it) }
-        return messages
-    }
-    private fun listToJson(list: List<String>): String {
-        return list.joinToString(
-            prefix = "[",
-            postfix = "]",
-            separator = ","
-        ) { "\"$it\"" }
-    }
-
-    private fun jsonToList(json: String): List<String> {
-        return json
-            .removePrefix("[")
-            .removeSuffix("]")
-            .split(",")
-            .map { it.trim().removeSurrounding("\"") }
-            .filter { it.isNotBlank() }
-    }
-
-
 
 }
