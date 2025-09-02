@@ -2,6 +2,7 @@ package org.company.chatapp.controller
 
 import org.company.chatapp.DTO.ConversationDTO
 import org.company.chatapp.DTO.CreateConversation
+import org.company.chatapp.DTO.CreateConversationGroup
 import org.company.chatapp.DTO.MessageDTO
 import org.company.chatapp.repository.ConversationRepository
 import org.company.chatapp.service.ConversationService
@@ -50,6 +51,35 @@ class ChatController(
     ): ResponseEntity<Any> {
         conversationService.createConversation(userId = userId, friendId = createConversation.friendId, message = createConversation.message)
         return ResponseEntity.ok("Tạo đoạn chat thành công")
+    }
+
+    @PostMapping("/createConversationGroup")
+    fun createConversationGroup(
+        @RequestPart("data") createConversationGroup: CreateConversationGroup,
+        @RequestPart("file") file: MultipartFile
+    ):ResponseEntity<Any> {
+        try {
+            val conversation = conversationService.createGroupConversation(
+                members = createConversationGroup.members,
+                name = createConversationGroup.name,
+                avatar = "")
+            val conversationId = conversation.id
+            val filename = "${conversationId}_${file.originalFilename}"
+            val uploadDir = Paths.get(System.getProperty("user.dir"), "conversation_media/${conversationId}/avatar").toFile()
+
+            if (!uploadDir.exists()) {
+                uploadDir.mkdirs()
+            }
+
+            val filePath = File(uploadDir, filename)
+            file.transferTo(filePath)
+
+            val updatedConversation = conversation.copy(avatar = filename)
+            conversationRepository.save(updatedConversation)
+            return ResponseEntity.ok(updatedConversation)
+        } catch (e: Exception){
+            return ResponseEntity.badRequest().build()
+        }
     }
 
     @PostMapping("/updateTheme/{conversationId}")

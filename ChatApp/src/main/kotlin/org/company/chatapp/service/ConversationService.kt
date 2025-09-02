@@ -1,6 +1,7 @@
 package org.company.chatapp.service
 
 import org.company.chatapp.DTO.ConversationDTO
+import org.company.chatapp.DTO.ConversationType
 import org.company.chatapp.DTO.MessageDTO
 import org.company.chatapp.entity.ConversationEntity
 import org.company.chatapp.entity.UserEntity
@@ -46,13 +47,14 @@ class ConversationService(
             friendId = userId)
     }
 
-    fun createGroupConversation(members: List<Long>, name: String){
-        conversationRepository.save(customMapper.conversationEntity(
+    fun createGroupConversation(members: List<Long>, name: String, avatar: String): ConversationEntity{
+        return conversationRepository.save(customMapper.conversationEntity(
             createdAt = Instant.now(),
             conversationName = name,
-            avatar = null,
+            avatar = avatar,
             numberMembers = members.size,
-            memberIds = members
+            memberIds = members,
+            conversationType = ConversationType.GROUP
         ))
     }
 
@@ -88,7 +90,8 @@ class ConversationService(
                 numberMembers = 2,
                 conversationName = friend.name,
                 memberIds = listOf(user.id, friend.id),
-                createdAt = Instant.now()
+                createdAt = Instant.now(),
+                conversationType = ConversationType.PAIR
             ))
         } else {
             conversationRepository.findById(conversationId).get()

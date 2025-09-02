@@ -46,12 +46,13 @@ class CustomMapper {
         createdAt = Timestamp.from(conversationEntity.createdAt),
     )
 
-    fun conversationEntity(conversationName: String?, avatar: String?, numberMembers: Int, memberIds: List<Long>, createdAt: Instant): ConversationEntity = ConversationEntity(
+    fun conversationEntity(conversationName: String?, avatar: String?, numberMembers: Int, memberIds: List<Long>, createdAt: Instant, conversationType: ConversationType): ConversationEntity = ConversationEntity(
         avatar = avatar,
         numberMembers = numberMembers,
         conversationName = conversationName,
         memberIds = memberIds,
-        createdAt = Instant.now()
+        createdAt = Instant.now(),
+        conversationType = conversationType
     )
 
     fun messageEntity(conversationId: ConversationEntity, senderId: UserEntity, isSent: Boolean, content: String?, mediaFile: String?, createdAt: Instant): MessageEntity = MessageEntity(
