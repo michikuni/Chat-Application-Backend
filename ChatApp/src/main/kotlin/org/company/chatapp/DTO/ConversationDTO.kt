@@ -13,6 +13,7 @@ data class ConversationDTO(
     val createdAt: Timestamp,
     val isRead: Boolean,
     val themeColor: String?,
+    val conversationType: ConversationType?
 )
 
 data class CreateConversation(

@@ -35,5 +35,6 @@ data class ConversationEntity(
     val themeColor: List<String>? = null,
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "conversation_type")
     val conversationType: ConversationType = ConversationType.PAIR
 )
