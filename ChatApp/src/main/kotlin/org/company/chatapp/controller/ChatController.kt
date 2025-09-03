@@ -31,12 +31,11 @@ class ChatController(
         return ResponseEntity.ok(conversation)
     }
 
-    @GetMapping("/allMessage/{userId}")
+    @GetMapping("/allMessage/{conversationId}")
     fun getAllMessage(
-        @PathVariable userId: Long,
-        @RequestParam friendId: Long
+        @PathVariable conversationId: Long
     ): ResponseEntity<List<MessageDTO>> {
-        val conversation = conversationService.getAllMessage(userId, friendId)
+        val conversation = conversationService.getAllMessage(conversationId = conversationId)
         return try {
             ResponseEntity.ok(conversation)
         } catch (e: ResponseStatusException){
@@ -49,7 +48,7 @@ class ChatController(
         @PathVariable userId: Long,
         @RequestBody createConversation: CreateConversation
     ): ResponseEntity<Any> {
-        conversationService.createConversation(userId = userId, friendId = createConversation.friendId, message = createConversation.message)
+        conversationService.createConversation(userId = userId, conversationId = createConversation.conversationId, message = createConversation.message)
         return ResponseEntity.ok("Tạo đoạn chat thành công")
     }
 
@@ -94,12 +93,11 @@ class ChatController(
     @PostMapping("/sendMediaFile/{userId}")
     fun sendMediaFile(
         @PathVariable userId: Long,
-        @RequestParam friendId: Long,
+        @RequestParam conversationId: Long,
         @RequestParam("file") file: MultipartFile
     ): ResponseEntity<Any> {
-        val conversation = conversationRepository.findConversationBetweenUsers(userId = userId, friendId = friendId)
-        val filename = "${conversation}_${userId}_${file.originalFilename}"
-        val uploadDir = Paths.get(System.getProperty("user.dir"), "conversation_media/${conversation.toString()}").toFile()
+        val filename = "${conversationId}_${userId}_${file.originalFilename}"
+        val uploadDir = Paths.get(System.getProperty("user.dir"), "conversation_media/${conversationId}").toFile()
 
         if (!uploadDir.exists()) {
             uploadDir.mkdirs()
@@ -110,7 +108,7 @@ class ChatController(
         println("Sending file to ${filePath.path}")
         file.transferTo(filePath)
 
-        conversationService.sendMediaFile(userId = userId, friendId = friendId, mediaFile = filename)
+        conversationService.sendMediaFile(userId = userId, conversationId = conversationId, mediaFile = filename)
         return ResponseEntity.ok("Gửi tin nhắn phương tiện thành công")
     }
 

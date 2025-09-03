@@ -19,9 +19,7 @@ class ConversationService(
     private val customMapper: CustomMapper,
     private val notificationService: NotificationService
 ){
-    fun getAllMessage(userId: Long, friendId: Long): List<MessageDTO> {
-        val conversationId = conversationRepository.findConversationBetweenUsers(userId, friendId)
-            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy id hội thoại")
+    fun getAllMessage(conversationId: Long): List<MessageDTO> {
         val message = messageRepository.findMessageByConversationId(conversationId)
         return message.map { customMapper.messageDto(
             messageEntity = it
@@ -32,8 +30,9 @@ class ConversationService(
         return conversationRepository.findAllConversationByUserId(userId)
     }
 
-    fun createConversation(userId: Long, friendId: Long, message: String){
-        val (user, conversation) = getOrCreateConversation(userId, friendId)
+    fun createConversation(userId: Long, conversationId: Long, message: String){
+        val user = userRepository.findById(userId).get()
+        val conversation = conversationRepository.findById(conversationId).get()
         messageRepository.save(customMapper.messageEntity(
             createdAt = Instant.now(),
             conversationId = conversation,
@@ -41,10 +40,14 @@ class ConversationService(
             content = message,
             mediaFile = null,
             isSent = false))
-        notificationService.sendMessageNotification(
-            userId = friendId,
-            messages = message,
-            friendId = userId)
+        conversation.memberIds.map {
+            if (userId != it){
+                notificationService.sendMessageNotification(
+                    userId = it,
+                    messages = "Đã gửi một tệp đa phương tiện",
+                    friendId = userId)
+            }
+        }
     }
 
     fun createGroupConversation(members: List<Long>, name: String, avatar: String): ConversationEntity{
@@ -58,8 +61,9 @@ class ConversationService(
         ))
     }
 
-    fun sendMediaFile(userId: Long, friendId: Long, mediaFile: String){
-        val (user, conversation) = getOrCreateConversation(userId, friendId)
+    fun sendMediaFile(userId: Long, conversationId: Long, mediaFile: String){
+        val user = userRepository.findById(userId).get()
+        val conversation = conversationRepository.findById(conversationId).get()
         messageRepository.save(customMapper.messageEntity(
             createdAt = Instant.now(),
             conversationId = conversation,
@@ -67,36 +71,21 @@ class ConversationService(
             content = null,
             mediaFile = mediaFile,
             isSent = false))
-        notificationService.sendMessageNotification(
-            userId = friendId,
-            messages = "Đã gửi một tệp đa phương tiện",
-            friendId = userId)
+        conversation.memberIds.map {
+            if (userId != it){
+                notificationService.sendMessageNotification(
+                    userId = it,
+                    messages = "Đã gửi một tệp đa phương tiện",
+                    friendId = userId)
+            }
+        }
+
     }
 
     fun themeConversation(conversationId: Long, colors: List<String>){
         val conversation = conversationRepository.findById(conversationId).get()
         val updateTheme = conversation.copy(themeColor = colors)
         conversationRepository.save(updateTheme)
-    }
-
-    private fun getOrCreateConversation(userId: Long, friendId: Long): Pair<UserEntity, ConversationEntity> {
-        val user = userRepository.findById(userId).get()
-        val friend = userRepository.findById(friendId).get()
-        val conversationId = conversationRepository.findConversationBetweenUsers(userId, friendId)
-
-        val conversation = if (conversationId == null) {
-            conversationRepository.save(customMapper.conversationEntity(
-                avatar = friend.avatar,
-                numberMembers = 2,
-                conversationName = friend.name,
-                memberIds = listOf(user.id, friend.id),
-                createdAt = Instant.now(),
-                conversationType = ConversationType.PAIR
-            ))
-        } else {
-            conversationRepository.findById(conversationId).get()
-        }
-        return user to conversation
     }
 
 }

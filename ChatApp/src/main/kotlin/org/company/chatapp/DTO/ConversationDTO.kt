@@ -18,7 +18,7 @@ data class ConversationDTO(
 )
 
 data class CreateConversation(
-    val friendId: Long,
+    val conversationId: Long,
     val message: String
 )
 
