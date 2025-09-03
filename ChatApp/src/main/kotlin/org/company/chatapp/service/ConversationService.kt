@@ -1,8 +1,6 @@
 package org.company.chatapp.service
 
-import org.company.chatapp.DTO.ConversationDTO
-import org.company.chatapp.DTO.ConversationType
-import org.company.chatapp.DTO.MessageDTO
+import org.company.chatapp.DTO.*
 import org.company.chatapp.entity.ConversationEntity
 import org.company.chatapp.entity.UserEntity
 import org.company.chatapp.repository.*
@@ -10,6 +8,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
 import java.time.Instant
+import kotlin.reflect.jvm.internal.impl.descriptors.deserialization.PlatformDependentDeclarationFilter.All
 
 @Service
 class ConversationService(
@@ -26,9 +25,13 @@ class ConversationService(
         ) }
     }
 
-    fun getAllConversation(userId: Long): List<ConversationDTO> {
+    fun getAllConversation(userId: Long): List<ConversationProjection> {
         return conversationRepository.findAllConversationByUserId(userId)
     }
+
+//    fun getConversation(userId: Long): List<TestGetCon> {
+//        return conversationRepository.findAllMembersByConversationId(userId)
+//    }
 
     fun createConversation(userId: Long, conversationId: Long, message: String){
         val user = userRepository.findById(userId).get()

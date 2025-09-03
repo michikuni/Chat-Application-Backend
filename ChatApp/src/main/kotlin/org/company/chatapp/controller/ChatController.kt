@@ -1,9 +1,6 @@
 package org.company.chatapp.controller
 
-import org.company.chatapp.DTO.ConversationDTO
-import org.company.chatapp.DTO.CreateConversation
-import org.company.chatapp.DTO.CreateConversationGroup
-import org.company.chatapp.DTO.MessageDTO
+import org.company.chatapp.DTO.*
 import org.company.chatapp.repository.ConversationRepository
 import org.company.chatapp.service.ConversationService
 import org.springframework.http.HttpStatus
@@ -15,6 +12,7 @@ import org.springframework.web.server.ResponseStatusException
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
+import kotlin.reflect.jvm.internal.impl.descriptors.deserialization.PlatformDependentDeclarationFilter.All
 
 
 @RestController
@@ -26,10 +24,18 @@ class ChatController(
     @GetMapping("/allConversation/{userId}")
     fun getAllConversation(
         @PathVariable userId: Long
-    ): ResponseEntity<List<ConversationDTO>> {
+    ): ResponseEntity<List<ConversationProjection>> {
         val conversation = conversationService.getAllConversation(userId)
         return ResponseEntity.ok(conversation)
     }
+
+//    @GetMapping("/getConversation/{userId}")
+//    fun getConversation(
+//        @PathVariable userId: Long
+//    ): ResponseEntity<List<TestGetCon>> {
+//        val conversation = conversationService.getConversation(userId)
+//        return ResponseEntity.ok(conversation)
+//    }
 
     @GetMapping("/allMessage/{conversationId}")
     fun getAllMessage(

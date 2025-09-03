@@ -1,21 +1,46 @@
 package org.company.chatapp.DTO
 
+import java.math.BigInteger
 import java.sql.Timestamp
+import java.time.LocalDateTime
 
-data class ConversationDTO(
+interface ConversationProjection {
+    fun getId(): Long
+    fun getGroupAvatar(): String?
+    fun getConversationName(): String?
+    fun getThemeColor(): String?
+    fun getConversationType(): String?
+    fun getMembersIds(): String?
+    fun getName(): String?
+    fun getPairAvatar(): String?
+    fun getContent(): String?
+    fun getMediaFile(): String?
+    fun getSenderId(): Long?
+    fun getCreatedAt(): Timestamp?
+    fun getIsRead(): Boolean?   // cho SQL boolean
+}
+
+
+
+data class AllConversationDTO(
     val id: Long,
-    val userId: Long,
-    val senderId: Long,
-    val name: String,
+    val avatar: String?,
     val conversationName: String?,
-    val avatar: String,
-    val content: String?,
-    val mediaFile: String?,
-    val createdAt: Timestamp,
-    val isRead: Boolean,
     val themeColor: String?,
-    val conversationType: String?
-)
+    val conversationType: String?,
+    val membersIds: String?,
+//    val senderId: Long?,
+//    val name: String?,
+//    val content: String?,
+//    val mediaFile: String?,
+//    val createdAt: Timestamp,
+//    val isRead: Boolean,
+) {
+    val membersIdList: List<Long>
+        get() = membersIds?.split(",")?.map { it.toLong() } ?: emptyList()
+}
+
+
 
 data class CreateConversation(
     val conversationId: Long,
