@@ -32,7 +32,18 @@ class ConversationService(
 
     fun findConversation(userId: Long, friendId: Long): Long? {
         val conversationId = conversationRepository.findConversationBetweenUsers(userId = userId, friendId = friendId)
-        return conversationId
+        return conversationId ?: createNewConversation(userId = userId, friendId = friendId)
+    }
+    private fun createNewConversation(userId: Long, friendId: Long): Long {
+        val savedConversation = conversationRepository.save(customMapper.conversationEntity(
+            avatar = null,
+            createdAt = Instant.now(),
+            conversationType = ConversationType.PAIR,
+            numberMembers = 2,
+            memberIds = listOf(userId, friendId),
+            conversationName = null,
+        ))
+        return savedConversation.id
     }
     fun createMessage(userId: Long, conversationId: Long, message: String){
         val user = userRepository.findById(userId).get()

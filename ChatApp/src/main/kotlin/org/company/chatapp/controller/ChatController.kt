@@ -46,6 +46,15 @@ class ChatController(
         }
     }
 
+    @PostMapping("/findConversation/{userId}/{friendId}")
+    fun findConversation(
+        @PathVariable userId: Long,
+        @PathVariable friendId: Long
+    ): ResponseEntity<Long>{
+        val conversation = conversationService.findConversation(userId = userId, friendId = friendId)
+        return ResponseEntity.ok(conversation)
+    }
+
     @PostMapping("/createMessage/{userId}")
     fun createConversation(
         @PathVariable userId: Long,
