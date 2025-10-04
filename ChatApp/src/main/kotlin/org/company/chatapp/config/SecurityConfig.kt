@@ -32,7 +32,9 @@ class SecurityConfig {
                         "/api/fcm/**",
                         "/api/users/get_avatar/**",
                         "/api/users/upload_avatar/**",
-                        "/api/chats/getMediaFile/**"
+                        "/api/chats/getMediaFile/**",
+                        "/api/chats/getConversationAvatar/**",
+                        "/api/chats/test/**"
                     ).permitAll()
                     .anyRequest().authenticated()
             }

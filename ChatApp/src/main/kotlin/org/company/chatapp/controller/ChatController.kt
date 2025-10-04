@@ -12,7 +12,6 @@ import org.springframework.web.server.ResponseStatusException
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
-import kotlin.reflect.jvm.internal.impl.descriptors.deserialization.PlatformDependentDeclarationFilter.All
 
 
 @RestController
@@ -21,21 +20,19 @@ class ChatController(
     private val conversationService: ConversationService,
     private val conversationRepository: ConversationRepository
 ) {
+//    @GetMapping("/test/{userId}")
+//    fun test(
+//        @PathVariable("userId") userId: Long,
+//    ){
+//        conversationService.debugTypes(userId)
+//    }
     @GetMapping("/allConversation/{userId}")
     fun getAllConversation(
         @PathVariable userId: Long
-    ): ResponseEntity<List<ConversationProjection>> {
+    ): ResponseEntity<List<ConversationDTO>> {
         val conversation = conversationService.getAllConversation(userId)
         return ResponseEntity.ok(conversation)
     }
-
-//    @GetMapping("/getConversation/{userId}")
-//    fun getConversation(
-//        @PathVariable userId: Long
-//    ): ResponseEntity<List<TestGetCon>> {
-//        val conversation = conversationService.getConversation(userId)
-//        return ResponseEntity.ok(conversation)
-//    }
 
     @GetMapping("/allMessage/{conversationId}")
     fun getAllMessage(
@@ -49,12 +46,12 @@ class ChatController(
         }
     }
 
-    @PostMapping("/createConversation/{userId}")
+    @PostMapping("/createMessage/{userId}")
     fun createConversation(
         @PathVariable userId: Long,
         @RequestBody createConversation: CreateConversation
     ): ResponseEntity<Any> {
-        conversationService.createConversation(userId = userId, conversationId = createConversation.conversationId, message = createConversation.message)
+        conversationService.createMessage(userId = userId, conversationId = createConversation.conversationId, message = createConversation.message)
         return ResponseEntity.ok("Tạo đoạn chat thành công")
     }
 
@@ -87,6 +84,29 @@ class ChatController(
         }
     }
 
+    @GetMapping("/getConversationAvatar/{fileName}")
+    fun getConversationAvatar(
+        @PathVariable fileName: String
+    ): ResponseEntity<ByteArray> {
+        return try {
+            val parts = fileName.split("_")
+            val conversationId = parts[0]
+            val imageFile = Paths.get(System.getProperty("user.dir"), "conversation_media/$conversationId/avatar", fileName).toFile()
+            println("Looking for file: ${imageFile.absolutePath}")
+            if (!imageFile.exists()){
+                return ResponseEntity.notFound().build()
+            }
+
+            val bytes = imageFile.readBytes()
+            val contentType = Files.probeContentType(imageFile.toPath()) ?: "application/octet-stream"
+
+            ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .body(bytes)
+        } catch (e: Exception){
+            ResponseEntity.status(500).build()
+        }
+    }
     @PostMapping("/updateTheme/{conversationId}")
     fun themeConversation(
         @PathVariable conversationId: Long,
@@ -132,7 +152,7 @@ class ChatController(
             }
 
             val bytes = imageFile.readBytes()
-            val contentType = Files.probeContentType(imageFile.toPath()) ?: "applicaton/octet-stream"
+            val contentType = Files.probeContentType(imageFile.toPath()) ?: "application/octet-stream"
 
             ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))

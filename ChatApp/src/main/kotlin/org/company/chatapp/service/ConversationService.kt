@@ -2,13 +2,9 @@ package org.company.chatapp.service
 
 import org.company.chatapp.DTO.*
 import org.company.chatapp.entity.ConversationEntity
-import org.company.chatapp.entity.UserEntity
 import org.company.chatapp.repository.*
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
-import org.springframework.web.server.ResponseStatusException
 import java.time.Instant
-import kotlin.reflect.jvm.internal.impl.descriptors.deserialization.PlatformDependentDeclarationFilter.All
 
 @Service
 class ConversationService(
@@ -25,15 +21,20 @@ class ConversationService(
         ) }
     }
 
-    fun getAllConversation(userId: Long): List<ConversationProjection> {
+    fun getAllConversation(userId: Long): List<ConversationDTO> {
         return conversationRepository.findAllConversationByUserId(userId)
     }
 
-//    fun getConversation(userId: Long): List<TestGetCon> {
-//        return conversationRepository.findAllMembersByConversationId(userId)
+//    fun debugTypes(userId: Long) {
+//        val rows = conversationRepository.debugFindRawNative(userId)
+//        rows.forEach(JpaDebug::printRow)
 //    }
 
-    fun createConversation(userId: Long, conversationId: Long, message: String){
+    fun findConversation(userId: Long, friendId: Long): Long? {
+        val conversationId = conversationRepository.findConversationBetweenUsers(userId = userId, friendId = friendId)
+        return conversationId
+    }
+    fun createMessage(userId: Long, conversationId: Long, message: String){
         val user = userRepository.findById(userId).get()
         val conversation = conversationRepository.findById(conversationId).get()
         messageRepository.save(customMapper.messageEntity(
