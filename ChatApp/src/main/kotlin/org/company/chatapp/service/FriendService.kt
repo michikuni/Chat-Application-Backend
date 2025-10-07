@@ -2,6 +2,7 @@ package org.company.chatapp.service
 
 import org.company.chatapp.DTO.FriendsDTO
 import org.company.chatapp.DTO.FriendshipStatus
+import org.company.chatapp.DTO.UserDTO
 import org.company.chatapp.entity.FriendsEntity
 import org.company.chatapp.repository.FriendshipRepository
 import org.company.chatapp.repository.UserRepository
@@ -24,24 +25,49 @@ class FriendService(
         val receiver = userService.getUserByEmail(receiverEmail)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy người nhận")
 
-        val friendship = friendshipRepository.findBetweenUsers(senderId, receiver.id)
+        val friendships = friendshipRepository.findBetweenUsers(senderId, receiver.id)
+        val friendship = friendships.firstOrNull()
+
         if (friendship != null) {
-            if (friendship.status == FriendshipStatus.ACCEPTED || friendship.status == FriendshipStatus.PENDING) {
-                throw IllegalArgumentException("Đã gửi lời mời hoặc đã là bạn bè")
-            } else if (friendship.status == FriendshipStatus.DECLINED && friendship.user.id == senderId) {
-                val updated = friendship.copy(status = FriendshipStatus.PENDING, createdAt = Instant.now())
-                friendshipRepository.save(updated)
-            } else if (friendship.status == FriendshipStatus.DECLINED && friendship.user.id != senderId) {
-                friendshipRepository.save(
-                    FriendsEntity(user = sender, friend = receiver, status = FriendshipStatus.PENDING, createdAt = Instant.now())
-                )
+            when (friendship.status) {
+                FriendshipStatus.ACCEPTED, FriendshipStatus.PENDING -> {
+                    throw IllegalArgumentException("Đã gửi lời mời hoặc đã là bạn bè")
+                }
+                FriendshipStatus.DECLINED -> {
+                    if (friendship.user.id == senderId) {
+                        // Người gửi cũ muốn gửi lại
+                        val updated = friendship.copy(
+                            status = FriendshipStatus.PENDING,
+                            createdAt = Instant.now()
+                        )
+                        friendshipRepository.save(updated)
+                    } else {
+                        // Người kia từng từ chối -> tạo mới lời mời
+                        friendshipRepository.save(
+                            FriendsEntity(
+                                user = sender,
+                                friend = receiver,
+                                status = FriendshipStatus.PENDING,
+                                createdAt = Instant.now()
+                            )
+                        )
+                    }
+                }
+                else -> {}
             }
         } else {
+            // Chưa có quan hệ -> tạo mới
             friendshipRepository.save(
-                FriendsEntity(user = sender, friend = receiver, status = FriendshipStatus.PENDING, createdAt = Instant.now())
+                FriendsEntity(
+                    user = sender,
+                    friend = receiver,
+                    status = FriendshipStatus.PENDING,
+                    createdAt = Instant.now()
+                )
             )
         }
     }
+
 
     fun acceptFriendRequest(friendshipId: Long): FriendsEntity {
         val friendship = friendshipRepository.findById(friendshipId)
@@ -58,32 +84,40 @@ class FriendService(
         return friendshipRepository.save(updated)
     }
 
-    fun getAllPendingFriends(userId :Long): List<FriendsDTO>{
-        val listPendingId = friendshipRepository.findPendingFriendIdByUserId(userId)
-            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy lời mời kết bạn nào cho user id : $userId")
-        return listPendingId.mapNotNull { id ->
-            val friendshipId  = friendshipRepository.findBetweenUsers(userId, id)
-            userRepository.findById(id).map { friendshipId?.let { it1 -> customMapper.friendshipDto(userEntity = it, friendshipId = it1.id) } }.orElse(null)
+    fun getAllPendingFriends(userId: Long): List<FriendsDTO> {
+        val listPendingIds = friendshipRepository.findPendingFriendIdByUserId(userId)
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy lời mời kết bạn nào cho user id: $userId")
+
+        return listPendingIds.mapNotNull { friendId ->
+            // lấy danh sách quan hệ (nếu có trùng thì chỉ lấy bản ghi đầu tiên)
+            val friendship = friendshipRepository.findBetweenUsers(userId, friendId).firstOrNull()
+                ?: return@mapNotNull null
+
+            userRepository.findById(friendId).map { user ->
+                customMapper.friendshipDto(userEntity = user, friendshipId = friendship.id)
+            }.orElse(null)
         }
     }
 
-    fun getAllRequestedFriends(userId :Long): List<FriendsDTO>{
-        val listRequestedId = friendshipRepository.findRequestedFriendIdByUserId(userId)
-            ?:throw ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy yêu cầu kết bạn nào cho user id: $userId")
-        return listRequestedId.mapNotNull { id ->
-            val friendshipId = friendshipRepository.findBetweenUsers(userId, id)
-            userRepository.findById(id).map { friendshipId?.let { it1 -> customMapper.friendshipDto(userEntity = it, friendshipId = it1.id) } }.orElse(null)
+
+    fun getAllRequestedFriends(userId: Long): List<FriendsDTO> {
+        val listRequestedIds = friendshipRepository.findRequestedFriendIdByUserId(userId)
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy yêu cầu kết bạn nào cho user id: $userId")
+
+        return listRequestedIds.mapNotNull { friendId ->
+            val friendship = friendshipRepository.findBetweenUsers(userId, friendId).firstOrNull()
+                ?: return@mapNotNull null
+
+            userRepository.findById(friendId).map { user ->
+                customMapper.friendshipDto(userEntity = user, friendshipId = friendship.id)
+            }.orElse(null)
         }
     }
 
-    fun getFriendByEmail(userId: Long, email: String): FriendsDTO?{
-        val friend = userRepository.findByEmail(email)
-        val friendship = friend?.let { friendshipRepository.findBetweenUsers(userId, friend.id) }
-        var friendshipId = 0L
-        if (friendship != null){
-            friendshipId = friendship.id
-        }
-        return friend?.let { customMapper.friendshipDto(userEntity = it, friendshipId = friendshipId) }
+
+    fun getFriendByEmail(email: String): UserDTO?{
+        val friend = userRepository.findByEmail(email) ?: return null
+        return friend.let { customMapper.userToDto(it) }
     }
 
 }

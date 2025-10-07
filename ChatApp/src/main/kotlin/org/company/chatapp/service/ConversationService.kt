@@ -48,6 +48,7 @@ class ConversationService(
     fun createMessage(userId: Long, conversationId: Long, message: String){
         val user = userRepository.findById(userId).get()
         val conversation = conversationRepository.findById(conversationId).get()
+        val titleGroupMessage = if (conversation.conversationType == ConversationType.GROUP) conversation.conversationName else null
         messageRepository.save(customMapper.messageEntity(
             createdAt = Instant.now(),
             conversationId = conversation,
@@ -59,8 +60,10 @@ class ConversationService(
             if (userId != it){
                 notificationService.sendMessageNotification(
                     userId = it,
-                    messages = "Đã gửi một tệp đa phương tiện",
-                    friendId = userId)
+                    messages = message,
+                    friendId = userId,
+                    titleGroup = titleGroupMessage
+                )
             }
         }
     }
@@ -79,6 +82,13 @@ class ConversationService(
     fun sendMediaFile(userId: Long, conversationId: Long, mediaFile: String){
         val user = userRepository.findById(userId).get()
         val conversation = conversationRepository.findById(conversationId).get()
+        val titleGroupMessage = if (conversation.conversationType == ConversationType.GROUP) {
+            if (conversation.conversationName != null){
+                conversation.conversationName
+            } else {
+                "Nhóm của bạn"
+            }
+        } else null
         messageRepository.save(customMapper.messageEntity(
             createdAt = Instant.now(),
             conversationId = conversation,
@@ -91,7 +101,9 @@ class ConversationService(
                 notificationService.sendMessageNotification(
                     userId = it,
                     messages = "Đã gửi một tệp đa phương tiện",
-                    friendId = userId)
+                    friendId = userId,
+                    titleGroup = titleGroupMessage
+                )
             }
         }
 

@@ -13,7 +13,7 @@ interface FriendshipRepository : JpaRepository<FriendsEntity, Long> {
     WHERE (f.user.id = :userId AND f.friend.id = :friendId)
        OR (f.user.id = :friendId AND f.friend.id = :userId)
 """)
-    fun findBetweenUsers(userId: Long, friendId: Long): FriendsEntity?
+    fun findBetweenUsers(userId: Long, friendId: Long): List<FriendsEntity>
 
     //Lấy danh sách bạn bè
     @Query(value = "SELECT id FROM friends WHERE (user_id = :userId OR friend_id = :userId) AND status = 'ACCEPTED'", nativeQuery = true)

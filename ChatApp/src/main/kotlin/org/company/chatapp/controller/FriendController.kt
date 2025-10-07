@@ -1,9 +1,10 @@
 package org.company.chatapp.controller
 
+import org.company.chatapp.DTO.FriendRequestDTO
 import org.company.chatapp.DTO.FriendsDTO
+import org.company.chatapp.DTO.UserDTO
 import org.company.chatapp.service.FriendService
 import org.springframework.http.ResponseEntity
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
 
@@ -16,19 +17,21 @@ class FriendController(
     @PostMapping("/add/{senderId}")
     fun sendFriendRequest(
         @PathVariable senderId: Long,
-        @RequestBody receiverEmail: String
-    ): ResponseEntity<String> {
+        @RequestBody request: FriendRequestDTO
+    ): ResponseEntity<Map<String, String>> {
         return try {
             println("Sender: $senderId")
-            println("Sender: $receiverEmail")
-            friendService.sendFriendRequest(senderId, receiverEmail)
-            ResponseEntity.ok("Gửi lời mời kết bạn thành công")
-        } catch (e: IllegalArgumentException){
-            ResponseEntity.badRequest().body(e.message)
-        } catch (e: ResponseStatusException){
-            ResponseEntity.badRequest().body(e.message)
+            println("Receiver: ${request.receiverEmail}")
+            friendService.sendFriendRequest(senderId, request.receiverEmail)
+            ResponseEntity.ok(mapOf("message" to "Gửi lời mời kết bạn thành công"))
+        } catch (e: IllegalArgumentException) {
+            ResponseEntity.badRequest().body(mapOf("error" to (e.message ?: "Dữ liệu không hợp lệ")))
+        } catch (e: ResponseStatusException) {
+            ResponseEntity.status(404).body(mapOf("error" to "Không tìm thấy người nhận"))
         }
     }
+
+
 
     // Chấp nhận lời mời kết bạn
     @PostMapping("/accept/{friendshipId}")
@@ -81,12 +84,11 @@ class FriendController(
         }
     }
 
-    @GetMapping("/getFriendByEmail/{userId}")
+    @GetMapping("/getFriendByEmail/{email}")
     fun getFriendByEmail(
-        @PathVariable userId: Long,
-        @RequestParam email: String
-    ): ResponseEntity<FriendsDTO>{
-        val friend = friendService.getFriendByEmail(userId, email)
+        @PathVariable email: String
+    ): ResponseEntity<UserDTO>{
+        val friend = friendService.getFriendByEmail(email)
         return if (friend != null){
             ResponseEntity.ok(friend)
         } else{

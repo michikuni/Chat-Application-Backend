@@ -12,7 +12,7 @@ class NotificationService (
     private val userFcmTokenService: UserFcmTokenService,
     private val userService: UserService
 ){
-    fun sendMessageNotification(userId: Long, messages: String, friendId: Long){
+    fun sendMessageNotification(userId: Long, messages: String, friendId: Long, titleGroup: String?){
         val tokens = userFcmTokenService.getTokensByUserId(userId)
         val userName = userService.getUserById(friendId)?.name
         val message =MulticastMessage.builder()
@@ -21,6 +21,7 @@ class NotificationService (
             .putData("userId", userId.toString())
             .putData("message", messages)
             .putData("time", System.currentTimeMillis().toString())
+            .putData("titleGroup", titleGroup ?: "")
             .build()
         val response: BatchResponse = FirebaseMessaging.getInstance().sendEachForMulticast(message)
         if (response.failureCount > 0){
