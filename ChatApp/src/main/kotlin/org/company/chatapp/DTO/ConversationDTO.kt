@@ -15,6 +15,7 @@ data class ConversationDTO(
     val mediaFile: String?,
     val senderId: Long?,
     val createdAt: Timestamp?,
+    val csCreatedAt: Timestamp?,
     val isRead: Boolean?,
 )
 
