@@ -2,6 +2,7 @@ package org.company.chatapp.service
 
 import org.company.chatapp.DTO.*
 import org.company.chatapp.entity.ConversationEntity
+import org.company.chatapp.entity.FeedEntity
 import org.company.chatapp.entity.MessageEntity
 import org.company.chatapp.entity.UserEntity
 import org.springframework.stereotype.Service
@@ -62,6 +63,13 @@ class CustomMapper {
         mediaFile = mediaFile,
         createdAt = Instant.now(),
         isRead = isSent,
+    )
+    fun feedDTO(feed: FeedEntity): FeedDTO = FeedDTO (
+        id = feed.id?:-1,
+        posterId = feed.posterId,
+        content = feed.content,
+        mediaFile = feed.mediaFile,
+        createdAt = feed.createdAt,
     )
 
 }
