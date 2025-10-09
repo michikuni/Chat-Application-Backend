@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface FeedRepository : JpaRepository<FeedEntity, Long>{
-    @Query("SELECT * FROM feeds WHERE poster_id = :userId", nativeQuery = true)
+    @Query("SELECT * FROM feeds WHERE poster_id = :userId ORDER BY created_at DESC", nativeQuery = true)
     fun findAllByPosterId(@Param("userId") userId: Long): List<FeedEntity>
 }
 interface FeedReactionRepository : JpaRepository<FeedReactionEntity, Long>
