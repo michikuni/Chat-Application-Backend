@@ -7,7 +7,7 @@ data class FeedDTO (
     val id: Long,
     val posterId: Long,
     val content: String?,
-    val createdAt: Instant,
+    val createdAt: String,
     val mediaFile: String?,
 )
 

@@ -19,23 +19,17 @@ class AuthController(
     fun register(
         @RequestBody registerDTO: RegisterDTO
     ): ResponseEntity<String> {
-        return try {
-            authService.register(registerDTO)
-            ResponseEntity.ok("Đăng ký tài khoản ${registerDTO.username} thành công")
-        } catch (e: IllegalArgumentException){
-            ResponseEntity.badRequest().body(e.message)
-        }
+        authService.register(registerDTO)
+        return ResponseEntity.ok("Đăng ký tài khoản ${registerDTO.username} thành công")
     }
+
 
     @PostMapping("/login")
     fun login(
         @RequestBody loginRequestDTO: LoginDTO
     ): ResponseEntity<Any> {
-        return try {
-            ResponseEntity.ok(authService.login(loginRequestDTO))
-        } catch (e: ResponseStatusException){
-            ResponseEntity.badRequest().body(e.message)
-        }
+        val response = authService.login(loginRequestDTO)
+        return ResponseEntity.ok(response)
     }
 
     @GetMapping("/checkTokenValid")

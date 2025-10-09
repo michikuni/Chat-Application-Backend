@@ -34,7 +34,8 @@ class SecurityConfig {
                         "/api/users/upload_avatar/**",
                         "/api/chats/getMediaFile/**",
                         "/api/chats/getConversationAvatar/**",
-                        "/api/chats/test/**"
+                        "/api/chats/test/**",
+                       "/api/feed/getMediaFile/**"
                     ).permitAll()
                     .anyRequest().authenticated()
             }

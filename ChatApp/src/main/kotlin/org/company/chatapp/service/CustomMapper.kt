@@ -69,7 +69,7 @@ class CustomMapper {
         posterId = feed.posterId,
         content = feed.content,
         mediaFile = feed.mediaFile,
-        createdAt = feed.createdAt,
+        createdAt = feed.createdAt.toString(),
     )
 
 }

@@ -23,37 +23,48 @@ class FeedController (
         @PathVariable userId: Long,
         @RequestParam("content", required = false) content: String?,
         @RequestParam("mediaFile", required = false) mediaFile: MultipartFile?
-    ): ResponseEntity<Any> {
-        val filename = "${userId}_${System.currentTimeMillis()}"
-        val uploadDir = Paths.get(System.getProperty("user.dir"), "feed_media/$userId").toFile()
-        if (!uploadDir.exists()) {
-            uploadDir.mkdirs()
-        }
+    ): ResponseEntity<Map<String, String>> {
         return try {
             if (content.isNullOrBlank() && (mediaFile == null || mediaFile.isEmpty)) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(mapOf("error" to "Feed must have either content or media file."))
             }
 
+            // Tạo thư mục lưu file
+            val uploadDir = Paths.get(System.getProperty("user.dir"), "feed_media", userId.toString()).toFile()
+            if (!uploadDir.exists()) uploadDir.mkdirs()
+
+            var savedFilename: String? = null
+
+            // Nếu có file upload
             if (mediaFile != null && !mediaFile.isEmpty) {
+                val originalFilename = mediaFile.originalFilename
+                val extension = originalFilename?.substringAfterLast('.', "")
+                val filename = "${userId}_${System.currentTimeMillis()}${if (!extension.isNullOrEmpty()) ".$extension" else ""}"
+
                 val filePath = File(uploadDir, filename)
                 mediaFile.transferTo(filePath)
+                savedFilename = filename
             }
 
+            // Tạo feed entity
             val feed = FeedEntity(
                 posterId = userId,
                 content = content,
-                mediaFile = filename,
-                createdAt = Instant.now(),
+                mediaFile = savedFilename,
+                createdAt = Instant.now()
             )
-            val savedFeed = feedService.createFeed(feed)
-            ResponseEntity.ok(savedFeed)
 
+            feedService.createFeed(feed)
+
+            // ✅ Trả về phản hồi thành công
+            ResponseEntity.ok(mapOf("message" to "Feed created successfully."))
         } catch (ex: Exception) {
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(mapOf("error" to ex.message))
+                .body(mapOf("error" to (ex.message ?: "Unexpected error occurred.")))
         }
     }
+
 
     @GetMapping("/getMediaFile/{fileName}")
     fun getMediaFile(
